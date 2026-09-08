@@ -1,0 +1,641 @@
+<title>香りタイプ診断</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Shippori+Mincho:wght@500;600;700;800&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap">
+
+<style>
+  /* ============================================================
+     香りタイプ診断 — 香水自動販売機（文化祭）
+     ひとつの世界観に統一したデザイン（アイボリー / バーガンディ / ゴールド）
+     ============================================================ */
+
+  :root{
+    color-scheme: light;
+    --ground-deep:#360D16;
+    --ground:#4E1421;
+    --wine:#6B1D2E;
+    --wine-soft:#7E2A3C;
+    --ivory:#F6EFE1;
+    --ivory-2:#FCF8EF;
+    --ink:#2A1216;
+    --ink-soft:#6A4249;
+    --gold:#C6A15B;
+    --gold-bright:#E4C67F;
+    --line:rgba(198,161,91,.38);
+    --line-soft:rgba(106,66,73,.18);
+    --shadow:38px 60px 90px -50px rgba(20,4,9,.85);
+    --r:22px;
+    --maxw:460px;
+  }
+
+  *{box-sizing:border-box}
+
+  body{
+    margin:0;
+    min-height:100vh;
+    font-family:"Zen Kaku Gothic New",-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN",sans-serif;
+    color:var(--ink);
+    background:
+      radial-gradient(120% 90% at 50% -10%, #6B1D2E 0%, #4E1421 42%, #360D16 100%);
+    -webkit-font-smoothing:antialiased;
+    text-rendering:optimizeLegibility;
+    overflow-x:hidden;
+  }
+
+  /* ---- 背景の漂うゴールドの光 ---- */
+  .atmos{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none}
+  .orb{position:absolute;border-radius:50%;filter:blur(60px);opacity:.5;mix-blend-mode:screen}
+  .orb.a{width:340px;height:340px;left:-120px;top:8%;
+    background:radial-gradient(circle,rgba(228,198,127,.55),transparent 70%);
+    animation:drift1 22s ease-in-out infinite}
+  .orb.b{width:280px;height:280px;right:-100px;bottom:6%;
+    background:radial-gradient(circle,rgba(198,161,91,.5),transparent 70%);
+    animation:drift2 27s ease-in-out infinite}
+  .grain{position:absolute;inset:0;opacity:.05;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+
+  @keyframes drift1{0%,100%{transform:translate(0,0)}50%{transform:translate(40px,50px)}}
+  @keyframes drift2{0%,100%{transform:translate(0,0)}50%{transform:translate(-40px,-40px)}}
+
+  /* ---- レイアウト枠 ---- */
+  .wrap{position:relative;z-index:1;min-height:100vh;
+    display:flex;align-items:center;justify-content:center;
+    padding:26px 18px 30px}
+
+  .card{
+    width:100%;max-width:var(--maxw);
+    background:linear-gradient(180deg,var(--ivory-2),var(--ivory));
+    border-radius:var(--r);
+    box-shadow:var(--shadow);
+    border:1px solid rgba(255,255,255,.6);
+    position:relative;
+    overflow:hidden;
+    isolation:isolate;
+  }
+  /* カード上下のゴールドのヘアライン */
+  .card::before{content:"";position:absolute;left:0;right:0;top:0;height:3px;
+    background:linear-gradient(90deg,transparent,var(--gold),var(--gold-bright),var(--gold),transparent)}
+
+  .pad{padding:30px 26px 30px}
+
+  /* ---- 共通の見出し・ラベル ---- */
+  .eyebrow{font-family:"Cormorant Garamond",serif;letter-spacing:.42em;
+    text-transform:uppercase;font-size:12px;font-weight:600;
+    color:var(--gold);margin:0}
+  .kicker{font-size:11.5px;letter-spacing:.34em;color:var(--ink-soft);
+    text-transform:uppercase;font-family:"Cormorant Garamond",serif;font-weight:600}
+
+  h1,h2{font-family:"Shippori Mincho",serif;color:var(--ink);
+    line-height:1.4;text-wrap:balance;margin:0;font-weight:700}
+
+  .serif-en{font-family:"Cormorant Garamond",serif}
+
+  /* ゴールドの小さな装飾（◆ ── ◆） */
+  .rule{display:flex;align-items:center;justify-content:center;gap:10px;
+    color:var(--gold);margin:0 auto}
+  .rule::before,.rule::after{content:"";height:1px;width:38px;
+    background:linear-gradient(90deg,transparent,var(--gold))}
+  .rule::after{background:linear-gradient(90deg,var(--gold),transparent)}
+  .diamond{width:5px;height:5px;background:var(--gold);transform:rotate(45deg)}
+
+  /* ---- ボタン ---- */
+  button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+
+  .btn-primary{
+    display:flex;align-items:center;justify-content:center;gap:10px;
+    width:100%;padding:19px 22px;border-radius:16px;
+    background:linear-gradient(180deg,var(--wine-soft),var(--wine));
+    color:var(--ivory-2);font-size:17px;font-weight:700;letter-spacing:.06em;
+    border:1px solid rgba(228,198,127,.55);
+    box-shadow:0 14px 26px -14px rgba(53,13,22,.9), inset 0 1px 0 rgba(255,255,255,.14);
+    transition:transform .25s ease,box-shadow .25s ease,filter .25s ease}
+  .btn-primary:hover{transform:translateY(-2px);filter:brightness(1.06);
+    box-shadow:0 20px 32px -14px rgba(53,13,22,.95), inset 0 1px 0 rgba(255,255,255,.2)}
+  .btn-primary:active{transform:translateY(0)}
+  .btn-primary .en{font-family:"Cormorant Garamond",serif;font-size:14px;letter-spacing:.28em}
+
+  .btn-ghost{
+    width:100%;padding:14px;border-radius:13px;
+    background:transparent;color:var(--ink-soft);font-size:14px;font-weight:500;
+    border:1px solid var(--line-soft);
+    transition:background .2s ease,color .2s ease,border-color .2s}
+  .btn-ghost:hover{background:rgba(106,66,73,.06);color:var(--ink);border-color:var(--line)}
+
+  .btn-text{color:var(--ink-soft);font-size:13.5px;padding:8px 4px;
+    display:inline-flex;align-items:center;gap:6px;transition:color .2s}
+  .btn-text:hover{color:var(--wine)}
+
+  /* ---- 選択肢ボタン ---- */
+  .options{display:flex;flex-direction:column;gap:14px}
+  .opt{
+    display:flex;align-items:center;gap:16px;text-align:left;width:100%;
+    padding:18px 18px;border-radius:16px;
+    background:var(--ivory-2);
+    border:1.5px solid var(--line-soft);
+    transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease,background .2s ease}
+  .opt:hover{border-color:var(--gold);transform:translateY(-2px);
+    box-shadow:0 16px 26px -20px rgba(53,13,22,.6)}
+  .opt:active{transform:translateY(0)}
+  .opt .mark{
+    flex:0 0 auto;width:46px;height:46px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    font-family:"Cormorant Garamond",serif;font-size:22px;font-weight:600;
+    color:var(--wine);background:#fff;
+    border:1.5px solid var(--line);box-shadow:inset 0 0 0 3px rgba(198,161,91,.1)}
+  .opt .otxt{display:flex;flex-direction:column;gap:3px}
+  .opt .olabel{font-family:"Shippori Mincho",serif;font-size:18px;font-weight:600;color:var(--ink)}
+  .opt .ohint{font-size:12.5px;color:var(--ink-soft);letter-spacing:.02em}
+
+  /* ---- 進捗 ---- */
+  .progress{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px}
+  .p-count{font-family:"Cormorant Garamond",serif;font-size:13px;letter-spacing:.2em;color:var(--ink-soft)}
+  .p-count b{color:var(--wine);font-size:20px;font-weight:600}
+  .p-dots{display:flex;gap:7px;align-items:center}
+  .p-dots i{width:26px;height:3px;border-radius:2px;background:var(--line-soft);
+    transition:background .35s ease,box-shadow .35s ease}
+  .p-dots i.on{background:linear-gradient(90deg,var(--gold),var(--gold-bright));
+    box-shadow:0 0 8px rgba(198,161,91,.6)}
+
+  .q-back{margin-top:26px;text-align:center}
+
+  /* ---- 画面切替アニメーション ---- */
+  .screen{display:none}
+  .screen.active{display:block;animation:fadeUp .55s cubic-bezier(.22,.7,.3,1) both}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+  .float{animation:floaty 5.5s ease-in-out infinite}
+  @keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+
+  /* ---- スタート画面 ---- */
+  .start-mark{width:70px;height:70px;margin:0 auto 6px;position:relative}
+  .start-mark svg{width:100%;height:100%;display:block}
+  .start-title{font-size:30px;margin:6px 0 0;letter-spacing:.04em}
+  .start-sub{font-size:14px;color:var(--ink-soft);line-height:1.9;margin:0}
+  .note{font-size:11.5px;color:var(--ink-soft);line-height:1.7;
+    background:rgba(198,161,91,.09);border:1px solid var(--line-soft);
+    border-radius:12px;padding:12px 14px;margin:0}
+
+  /* ---- 結果画面（撮影したくなるラベル）---- */
+  .result-plate{
+    position:relative;border-radius:18px;overflow:hidden;
+    background:radial-gradient(130% 100% at 50% 0%,var(--wine) 0%,var(--ground) 70%,var(--ground-deep) 100%);
+    color:var(--ivory-2);padding:30px 24px 26px;text-align:center;
+    border:1px solid rgba(228,198,127,.4);
+    box-shadow:inset 0 0 40px rgba(0,0,0,.35)}
+  .result-plate::before{content:"";position:absolute;inset:9px;border:1px solid rgba(228,198,127,.35);border-radius:12px;pointer-events:none}
+  .r-code{font-family:"Cormorant Garamond",serif;letter-spacing:.4em;font-size:12px;
+    color:var(--gold-bright);text-transform:uppercase}
+  .r-en{font-family:"Cormorant Garamond",serif;font-style:italic;font-size:15px;
+    color:rgba(246,239,225,.72);margin-top:4px}
+  .r-name{font-family:"Shippori Mincho",serif;font-weight:800;font-size:34px;
+    line-height:1.3;margin:8px 0 4px;color:#fff;
+    text-shadow:0 2px 20px rgba(0,0,0,.3)}
+  .r-tags{display:flex;flex-wrap:wrap;gap:7px;justify-content:center;margin-top:14px}
+  .r-tags span{font-size:11.5px;letter-spacing:.08em;color:var(--gold-bright);
+    border:1px solid rgba(228,198,127,.5);border-radius:20px;padding:4px 12px}
+  .r-desc{font-size:14px;line-height:2;color:var(--ink);margin:20px 2px 0;text-align:center}
+
+  .r-meta{display:flex;gap:12px;margin-top:18px}
+  .r-meta .cell{flex:1;background:var(--ivory-2);border:1px solid var(--line-soft);
+    border-radius:13px;padding:13px 14px;min-width:0}
+  .r-meta .clabel{font-size:10.5px;letter-spacing:.24em;color:var(--gold);
+    text-transform:uppercase;font-family:"Cormorant Garamond",serif;font-weight:600}
+  .r-meta .cval{font-family:"Shippori Mincho",serif;font-size:16px;font-weight:600;
+    color:var(--ink);margin-top:4px;line-height:1.5;word-break:break-word}
+
+  .r-actions{display:flex;flex-direction:column;gap:11px;margin-top:22px}
+  .r-actions .row{display:flex;gap:11px}
+  .r-actions .row > *{flex:1}
+
+  .disclaimer{font-size:11px;color:var(--ink-soft);text-align:center;
+    line-height:1.7;margin:20px 0 0}
+
+  /* ---- 情報パネル（使い方 / 設置場所）モーダル ---- */
+  .sheet-mask{position:fixed;inset:0;z-index:5;background:rgba(30,6,11,.62);
+    backdrop-filter:blur(3px);display:none;align-items:flex-end;justify-content:center;padding:0}
+  .sheet-mask.open{display:flex;animation:fade .3s ease both}
+  @keyframes fade{from{opacity:0}to{opacity:1}}
+  .sheet{width:100%;max-width:var(--maxw);max-height:88vh;overflow-y:auto;
+    background:linear-gradient(180deg,var(--ivory-2),var(--ivory));
+    border-radius:22px 22px 0 0;padding:14px 24px 30px;
+    border-top:3px solid var(--gold);
+    animation:sheetUp .4s cubic-bezier(.22,.7,.3,1) both}
+  @keyframes sheetUp{from{transform:translateY(40px)}to{transform:translateY(0)}}
+  .sheet-grab{width:44px;height:4px;border-radius:3px;background:var(--line);margin:0 auto 16px}
+  .sheet h2{font-size:21px;margin-bottom:4px}
+  .info-block{margin-top:20px}
+  .info-block > .kicker{display:block;margin-bottom:10px}
+  .steps{display:flex;flex-direction:column;gap:10px;margin:0;padding:0;list-style:none;counter-reset:s}
+  .steps li{display:flex;gap:13px;align-items:flex-start;font-size:14px;line-height:1.7;color:var(--ink)}
+  .steps li::before{counter-increment:s;content:counter(s);
+    flex:0 0 auto;width:26px;height:26px;border-radius:50%;
+    background:var(--wine);color:var(--ivory-2);font-family:"Cormorant Garamond",serif;
+    font-size:14px;font-weight:600;display:flex;align-items:center;justify-content:center;margin-top:1px}
+  .pay{display:flex;flex-wrap:wrap;gap:8px}
+  .pay span{font-size:12.5px;color:var(--ink);background:#fff;border:1px solid var(--line);
+    border-radius:9px;padding:7px 12px}
+  .kv{font-size:14px;line-height:1.9;color:var(--ink)}
+  .kv b{font-family:"Shippori Mincho",serif}
+  .qr-box{margin-top:12px;display:flex;flex-direction:column;align-items:center;gap:10px;
+    background:#fff;border:1px dashed var(--line);border-radius:14px;padding:20px;text-align:center}
+  .qr-box img{width:150px;height:150px;object-fit:contain;border-radius:6px}
+  .qr-ph{width:150px;height:150px;border-radius:10px;display:flex;align-items:center;
+    justify-content:center;text-align:center;font-size:12px;color:var(--ink-soft);
+    background:repeating-linear-gradient(45deg,#f2ebdb,#f2ebdb 8px,#eee3cd 8px,#eee3cd 16px)}
+  .qr-cap{font-size:12px;color:var(--ink-soft)}
+
+  .toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%) translateY(20px);
+    z-index:20;background:var(--ink);color:var(--ivory-2);padding:12px 22px;border-radius:30px;
+    font-size:13.5px;letter-spacing:.04em;box-shadow:0 12px 30px -10px rgba(0,0,0,.6);
+    border:1px solid rgba(228,198,127,.4);opacity:0;pointer-events:none;transition:opacity .3s,transform .3s}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+  /* 少し小さい画面 */
+  @media (max-width:380px){
+    .pad{padding:26px 20px}
+    .start-title{font-size:26px}
+    .r-name{font-size:29px}
+    .opt .olabel{font-size:16px}
+  }
+
+  /* モーション配慮 */
+  @media (prefers-reduced-motion:reduce){
+    *{animation:none !important;transition:none !important}
+    .screen{display:none}
+    .screen.active{display:block}
+  }
+
+  :focus-visible{outline:2.5px solid var(--gold);outline-offset:3px;border-radius:6px}
+</style>
+
+<div class="atmos" aria-hidden="true">
+  <div class="orb a"></div>
+  <div class="orb b"></div>
+  <div class="grain"></div>
+</div>
+
+<div class="wrap">
+  <div class="card">
+    <div class="pad">
+
+      <!-- ============ スタート画面 ============ -->
+      <section class="screen active" id="screen-start" aria-labelledby="start-h">
+        <div style="text-align:center;display:flex;flex-direction:column;gap:16px;align-items:center">
+          <div class="start-mark float" aria-hidden="true">
+            <svg viewBox="0 0 100 100" fill="none">
+              <rect x="34" y="8" width="32" height="14" rx="3" stroke="#C6A15B" stroke-width="2.4"/>
+              <path d="M40 22 h20 l6 12 v46 a8 8 0 0 1-8 8 H42 a8 8 0 0 1-8-8 V34 z" stroke="#C6A15B" stroke-width="2.4"/>
+              <path d="M40 52 h20" stroke="#C6A15B" stroke-width="1.6" opacity=".7"/>
+              <circle cx="50" cy="68" r="7" stroke="#E4C67F" stroke-width="1.6" opacity=".8"/>
+              <path d="M50 30 v-6 M46 26 l4 4 4-4" stroke="#E4C67F" stroke-width="1.4" opacity=".8"/>
+            </svg>
+          </div>
+          <p class="eyebrow">Parfum Diagnosis</p>
+          <h1 class="start-title" id="start-h">あなたの<br>香りタイプ診断</h1>
+          <div class="rule"><span class="diamond"></span></div>
+          <p class="start-sub">3つの質問に答えるだけ。<br>8つの香りタイプから、あなたに<br>おすすめの一本をご提案します。</p>
+        </div>
+
+        <div style="margin-top:26px;display:flex;flex-direction:column;gap:12px">
+          <button class="btn-primary" id="btn-start">
+            <span>診断をはじめる</span>
+            <span class="en">START</span>
+          </button>
+          <button class="btn-ghost" data-open-info>自動販売機の使い方・設置場所を見る</button>
+        </div>
+
+        <p class="note" style="margin-top:22px">
+          ※ これは香り選びを楽しむための簡易診断です。医学的・体質的な診断ではありません。
+        </p>
+      </section>
+
+      <!-- ============ 質問画面（JSで内容を差し替え）============ -->
+      <section class="screen" id="screen-q" aria-labelledby="q-h" aria-live="polite">
+        <div class="progress">
+          <span class="p-count">問 <b id="q-num">01</b> <span style="opacity:.5"> / 03</span></span>
+          <div class="p-dots" id="q-dots" aria-hidden="true">
+            <i></i><i></i><i></i>
+          </div>
+        </div>
+
+        <p class="kicker" id="q-kicker" style="text-align:center;display:block;margin-bottom:14px"></p>
+        <h2 id="q-h" style="text-align:center;font-size:24px;margin-bottom:26px"></h2>
+
+        <div class="options" id="q-options"></div>
+
+        <div class="q-back">
+          <button class="btn-text" id="btn-back">‹ ひとつ戻る</button>
+        </div>
+      </section>
+
+      <!-- ============ 結果画面 ============ -->
+      <section class="screen" id="screen-result" aria-labelledby="r-name-h">
+        <div class="result-plate float">
+          <div class="r-code" id="r-code">TYPE AAA</div>
+          <div class="r-en" id="r-en">Your Signature Scent</div>
+          <div class="r-name" id="r-name-h">香りA</div>
+          <div class="r-tags" id="r-tags"></div>
+        </div>
+
+        <p class="r-desc" id="r-desc"></p>
+
+        <div class="r-meta">
+          <div class="cell">
+            <div class="clabel">Price</div>
+            <div class="cval" id="r-price">—</div>
+          </div>
+          <div class="cell">
+            <div class="clabel">Location</div>
+            <div class="cval" id="r-location">—</div>
+          </div>
+        </div>
+
+        <div class="r-actions">
+          <button class="btn-primary" id="btn-copy">
+            <span>結果をコピーする</span>
+            <span class="en">COPY</span>
+          </button>
+          <div class="row">
+            <button class="btn-ghost" data-open-info>自販機の使い方</button>
+            <button class="btn-ghost" id="btn-restart">もう一度診断</button>
+          </div>
+        </div>
+
+        <p class="disclaimer">
+          香り選びを楽しむための簡易診断です。相性は目安としてお楽しみください。<br>
+          記載の香り名・価格・設置場所は準備中の仮の内容を含みます。
+        </p>
+      </section>
+
+    </div>
+  </div>
+</div>
+
+<!-- ============ 情報シート（使い方・料金・決済・設置場所・QR）============ -->
+<div class="sheet-mask" id="info-mask">
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="info-title">
+    <div class="sheet-grab"></div>
+    <p class="eyebrow" style="text-align:center">Vending Machine Guide</p>
+    <h2 id="info-title" style="text-align:center">香水自動販売機のご案内</h2>
+    <div class="rule" style="margin-top:12px"><span class="diamond"></span></div>
+
+    <div class="info-block">
+      <span class="kicker">使い方</span>
+      <ol class="steps" id="info-howto"></ol>
+    </div>
+
+    <div class="info-block">
+      <span class="kicker">料金</span>
+      <p class="kv" id="info-price"></p>
+    </div>
+
+    <div class="info-block">
+      <span class="kicker">お支払い方法</span>
+      <div class="pay" id="info-payment"></div>
+    </div>
+
+    <div class="info-block">
+      <span class="kicker">設置場所</span>
+      <p class="kv"><b id="info-location"></b></p>
+      <div class="qr-box" id="info-qr"></div>
+    </div>
+
+    <button class="btn-primary" id="btn-close-info" style="margin-top:26px">
+      <span>とじる</span><span class="en">CLOSE</span>
+    </button>
+  </div>
+</div>
+
+<div class="toast" id="toast">コピーしました</div>
+
+<script>
+/* ============================================================
+   ▼▼▼ ここだけ編集すればOK ▼▼▼
+   香り名・説明・価格・自販機情報・設置場所・QRコードは
+   すべてこの CONFIG の中で変更できます。
+   （HTML・CSSは触らなくて大丈夫です）
+   ============================================================ */
+const CONFIG = {
+
+  /* --- 8つの香りタイプ ---
+     判定コードは 質問1・2・3 の回答（A/B）の並びです。
+     A = 甘い / 日常 / 朝昼、B = 爽やか / 特別な日 / 夕夜
+     ※香り名は仮名です。実際の商品名に差し替えてください。 */
+  scents: {
+    AAA: { name:"香りA", en:"No.01", desc:"甘くやわらかで、毎日の朝にそっと寄り添う香り。肩の力が抜ける、あなたらしい定番の一本です。" },
+    AAB: { name:"香りB", en:"No.02", desc:"甘さを日常づかいしながら、夜にはほんのり深く。切り替えの時間を彩る、ふところの深い香りです。" },
+    ABA: { name:"香りC", en:"No.03", desc:"特別な朝を甘く華やかに。記念日や大切な予定の日に、気分を高めてくれる贅沢な香りです。" },
+    ABB: { name:"香りD", en:"No.04", desc:"甘く濃密で、特別な夜のための一本。ドレスアップした装いに寄り添う、印象に残る香りです。" },
+    BAA: { name:"香りE", en:"No.05", desc:"爽やかで軽やか。忙しい日常の朝を、すっと清々しく整えてくれる、透明感のある香りです。" },
+    BAB: { name:"香りF", en:"No.06", desc:"爽やかさを保ちながら、夕暮れには落ち着いた表情に。ふだん使いに映える、洗練された香りです。" },
+    BBA: { name:"香りG", en:"No.07", desc:"晴れやかな特別の日に。澄んだ爽やかさが、朝からの一日を清々しく彩る華やかな香りです。" },
+    BBB: { name:"香りH", en:"No.08", desc:"爽やかで奥行きのある、特別な夜のための香り。凛とした余韻が、印象的な時間を演出します。" }
+  },
+
+  /* --- 価格（各タイプ共通なら price、タイプ別に変えるなら priceByType を使用）---
+     priceByType に値を入れると、そのタイプはこちらが優先されます。 */
+  price: "準備中",           // 例）"1 プッシュ ¥300"
+  priceByType: {             // 例）AAA:"¥300 / 3ml"  … 空のままなら price を表示
+    // AAA:"", AAB:"", ...
+  },
+
+  /* --- 設置場所（結果画面と情報シートに表示）--- */
+  location: "準備中",         // 例）"体育館前 特設ブース"
+
+  /* --- 自動販売機の案内 --- */
+  machine: {
+    howto: [
+      "画面で気になる香りを選びます。",
+      "料金を入れる、または決済方法を選びます。",
+      "テスターで香りを確かめます。",
+      "気に入ったら、その場でお持ち帰りできます。"
+    ],
+    price: "準備中（当日ブースにてご案内します）",   // 情報シートの「料金」欄
+    payment: ["現金", "交通系IC", "QRコード決済"],    // 決済方法
+    qrImage: ""   // QRコード画像のURL。空のままなら「準備中」の枠を表示します。
+  }
+};
+/* ▲▲▲ 編集エリアここまで ▲▲▲ ============================== */
+
+
+/* ====== 質問（通常は変更不要）====== */
+const QUESTIONS = [
+  { kicker:"Question One", title:"どんな香りが好みですか？",
+    a:{ code:"A", label:"甘い香り", hint:"やわらかく、あたたかい印象" },
+    b:{ code:"B", label:"爽やかな香り", hint:"軽やかで、透明感のある印象" } },
+  { kicker:"Question Two", title:"どんな時に使いたいですか？",
+    a:{ code:"A", label:"日常向け", hint:"ふだん使いで気軽に" },
+    b:{ code:"B", label:"特別な日向け", hint:"記念日やお出かけに" } },
+  { kicker:"Question Three", title:"どの時間帯につけたいですか？",
+    a:{ code:"A", label:"朝・昼向け", hint:"一日のはじまりに" },
+    b:{ code:"B", label:"夕方・夜向け", hint:"一日の終わりに" } }
+];
+
+/* ====== 状態管理 ====== */
+const state = { answers: [] };  // 例）["A","B","A"]
+
+const $ = (s)=>document.querySelector(s);
+const screens = {
+  start:  $("#screen-start"),
+  q:      $("#screen-q"),
+  result: $("#screen-result")
+};
+
+function show(name){
+  Object.values(screens).forEach(s=>s.classList.remove("active"));
+  screens[name].classList.add("active");
+  window.scrollTo({top:0, behavior:"instant" in window ? "instant" : "auto"});
+}
+
+/* ====== 質問の描画 ====== */
+function renderQuestion(){
+  const i = state.answers.length;        // これから答える質問の番号
+  const q = QUESTIONS[i];
+  $("#q-num").textContent = String(i+1).padStart(2,"0");
+  $("#q-kicker").textContent = q.kicker;
+  $("#q-h").textContent = q.title;
+
+  // 進捗ドット
+  document.querySelectorAll("#q-dots i").forEach((d,idx)=>{
+    d.classList.toggle("on", idx <= i);
+  });
+
+  // 選択肢
+  const wrap = $("#q-options");
+  wrap.innerHTML = "";
+  [q.a, q.b].forEach(opt=>{
+    const b = document.createElement("button");
+    b.className = "opt";
+    b.innerHTML =
+      '<span class="mark">'+opt.code+'</span>'+
+      '<span class="otxt"><span class="olabel">'+opt.label+
+      '</span><span class="ohint">'+opt.hint+'</span></span>';
+    b.addEventListener("click", ()=> choose(opt.code));
+    wrap.appendChild(b);
+  });
+
+  // 戻るボタンの文言
+  $("#btn-back").textContent = (i === 0) ? "‹ 最初にもどる" : "‹ ひとつ戻る";
+  show("q");
+}
+
+function choose(code){
+  state.answers.push(code);
+  if(state.answers.length < QUESTIONS.length){
+    renderQuestion();
+  }else{
+    renderResult();
+  }
+}
+
+function goBack(){
+  if(state.answers.length === 0){
+    show("start");
+  }else{
+    state.answers.pop();
+    renderQuestion();
+  }
+}
+
+/* ====== 結果の描画 ====== */
+function currentCode(){ return state.answers.join(""); }
+
+function priceFor(code){
+  const p = CONFIG.priceByType && CONFIG.priceByType[code];
+  return (p && p.trim()) ? p : CONFIG.price;
+}
+
+function renderResult(){
+  const code = currentCode();
+  const s = CONFIG.scents[code] || { name:"—", en:"", desc:"" };
+
+  $("#r-code").textContent = "TYPE " + code;
+  $("#r-en").textContent = s.en ? "Eau de Parfum "+s.en : "Your Signature Scent";
+  $("#r-name-h").textContent = s.name;
+  $("#r-desc").textContent = s.desc;
+  $("#r-price").textContent = priceFor(code);
+  $("#r-location").textContent = CONFIG.location;
+
+  // 香りの特徴タグ（回答から生成）
+  const map = [
+    ["甘い","爽やか"],
+    ["日常づかい","特別な日"],
+    ["朝・昼","夕方・夜"]
+  ];
+  const tags = state.answers.map((a,idx)=> map[idx][a==="A"?0:1]);
+  $("#r-tags").innerHTML = tags.map(t=>"<span>"+t+"</span>").join("");
+
+  show("result");
+}
+
+/* ====== 結果コピー ====== */
+function copyResult(){
+  const code = currentCode();
+  const s = CONFIG.scents[code] || {name:"—"};
+  const lines = [
+    "🌸 私の香りタイプは【"+s.name+"】でした！",
+    "（タイプ "+code+"）",
+    s.desc,
+    "価格：" + priceFor(code),
+    "設置場所：" + CONFIG.location,
+    "#香りタイプ診断 #香水自販機"
+  ];
+  const text = lines.join("\n");
+
+  const ok = ()=> toast("結果をコピーしました");
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(ok).catch(()=>fallbackCopy(text,ok));
+  }else{
+    fallbackCopy(text, ok);
+  }
+}
+function fallbackCopy(text, done){
+  const ta = document.createElement("textarea");
+  ta.value = text; ta.style.position="fixed"; ta.style.opacity="0";
+  document.body.appendChild(ta); ta.select();
+  try{ document.execCommand("copy"); done(); }
+  catch(e){ toast("コピーできませんでした"); }
+  document.body.removeChild(ta);
+}
+
+let toastTimer;
+function toast(msg){
+  const t = $("#toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>t.classList.remove("show"), 2200);
+}
+
+/* ====== 情報シート ====== */
+function buildInfo(){
+  $("#info-howto").innerHTML =
+    CONFIG.machine.howto.map(step=>"<li>"+step+"</li>").join("");
+  $("#info-price").textContent = CONFIG.machine.price;
+  $("#info-payment").innerHTML =
+    CONFIG.machine.payment.map(p=>"<span>"+p+"</span>").join("");
+  $("#info-location").textContent = CONFIG.location;
+
+  const qr = $("#info-qr");
+  if(CONFIG.machine.qrImage && CONFIG.machine.qrImage.trim()){
+    qr.innerHTML =
+      '<img src="'+CONFIG.machine.qrImage+'" alt="QRコード">'+
+      '<span class="qr-cap">スマートフォンで読み取ってください</span>';
+  }else{
+    qr.innerHTML =
+      '<div class="qr-ph">QRコード<br>（準備中）</div>'+
+      '<span class="qr-cap">QRコードは後から設定できます</span>';
+  }
+}
+function openInfo(){ buildInfo(); $("#info-mask").classList.add("open"); }
+function closeInfo(){ $("#info-mask").classList.remove("open"); }
+
+/* ====== イベント登録 ====== */
+$("#btn-start").addEventListener("click", ()=>{ state.answers=[]; renderQuestion(); });
+$("#btn-back").addEventListener("click", goBack);
+$("#btn-copy").addEventListener("click", copyResult);
+$("#btn-restart").addEventListener("click", ()=>{ state.answers=[]; show("start"); });
+$("#btn-close-info").addEventListener("click", closeInfo);
+document.querySelectorAll("[data-open-info]").forEach(b=> b.addEventListener("click", openInfo));
+$("#info-mask").addEventListener("click", (e)=>{ if(e.target === $("#info-mask")) closeInfo(); });
+document.addEventListener("keydown", (e)=>{ if(e.key==="Escape") closeInfo(); });
+</script>

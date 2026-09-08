@@ -1,0 +1,16 @@
+# macOS
+.DS_Store
+._*
+
+# backups
+*.backup-*.html
+
+# 大容量・未使用のローカル素材（リポジトリには含めない）
+assets/
+OPA/
+SNS/
+パネル/
+デジタルサイネージ/
+研究報告会_成果物/
+３F：SNS/
+４F：/
