@@ -2,11 +2,16 @@
 .DS_Store
 ._*
 
-# backups
+# 作業中のバックアップ
 *.backup-*.html
 
-# 大容量・未使用のローカル素材（リポジトリには含めない）
-assets/
+# 素材の元データ（合計 250MB 超・ローカルのみ）
+assets/*
+!assets/w/
+assets/w/*
+!assets/w/*.webp
+
+# このプロジェクトと無関係な素材
 OPA/
 SNS/
 パネル/

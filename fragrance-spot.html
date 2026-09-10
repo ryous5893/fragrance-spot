@@ -1,431 +1,738 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Fragrance Spot 香り診断</title>
-<meta name="description" content="かわせみ祭 × 高崎モントレー Fragrance Spot。5つの問いで、あなたに似合う一本を見つける香り診断体験。">
+<meta name="description" content="かわせみ祭 × 高崎モントレー Fragrance Spot 4つの問いで導く あなたのための香りの処方">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,500&family=Outfit:wght@300;400;500;600;700&family=Shippori+Mincho:wght@500;600;700;800&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,400&family=Shippori+Mincho:wght@400;500;600;700&family=Space+Mono:wght@400;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap">
 
 <style>
 /* =================================================================
    Fragrance Spot ｜ 香り診断  （かわせみ祭 / 高崎モントレー 3F・4F）
-   単一ファイル・依存なし・画像アセット不使用（全ビジュアルは SVG/CSS/Canvas 生成）。
-   ・上部＝没入型ノワール（Hero＋スクロール3D フラコン）
-   ・診断＝没入オーバーレイ（1画面1問）
-   ・結果＝香水ごとに「香りの世界」が変わる（配色・光・フラコンを再構成）
-   香り・価格・設置・使い方・QR・アンケートは末尾 CONFIG で差し替え可。
+   方向性：ミニマル・エディトリアル（Aesop / Le Labo）
+   紙のような地・インクの文字・ヘアライン・モノラベル・余白で構成
+   結果は「調香処方（FORMULA）ラベル」全ビジュアルはコード（SVG/CSS）
+   香り・価格・設置・使い方は末尾 CONFIG で差し替え可
    ================================================================= */
 :root{
-  --noir:#0D0709; --noir-2:#150B10; --noir-3:#1E1015;
-  --wine-deep:#360C17; --wine:#5E1626; --wine-soft:#7C2334;
-  --ivory:#F2E9DA; --ivory-2:#FBF6EC;
-  --ink:#23100F; --ink-soft:#6C4148;
-  --gold:#C6A15C; --gold-lt:#E9CF92; --champagne:#DCCBA3;
-  --line-gold:rgba(198,161,92,.32); --line-dark:rgba(233,207,146,.14); --line-ink:rgba(108,65,72,.2);
-  --maxw:1200px;
-  --ease:cubic-bezier(.22,.61,.24,1); --spring:cubic-bezier(.34,1.4,.5,1);
-  --acc:#C6A15C; --acc-deep:#7C2334; --acc-bg:#F2E9DA; --acc-liquid:#8E2A3C;
+  --paper:#EBE4D5; --paper-2:#F2ECDF; --card:#F6F1E6;
+  --ink:#211F19; --ink-2:#5E5A4F; --ink-3:#8B8676;
+  --line:rgba(33,31,25,.16); --line-2:rgba(33,31,25,.30);
+  --accent:#7E2B2B;            /* 抑えたオックスブラッド：細線・小マークのみ */
+  --gold:#9A7F43;
+  --sel:rgba(126,43,43,.10);
+  --serif:"Fraunces","Shippori Mincho",Georgia,serif;
+  --jp:"Shippori Mincho",serif;
+  --mono:"Space Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --sans:"Zen Kaku Gothic New",system-ui,-apple-system,sans-serif;
+  --mw:1180px;
+  --ease:cubic-bezier(.22,.61,.24,1);
 }
 *{box-sizing:border-box}
-html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
-@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+html{-webkit-text-size-adjust:100%}
 body{
-  margin:0;min-height:100dvh;background:var(--noir);color:var(--ivory);
-  font-family:"Zen Kaku Gothic New","Outfit",-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN",sans-serif;
-  line-height:1.75;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;overflow-x:hidden;
+  margin:0;min-height:100dvh;background:var(--paper);color:var(--ink);
+  font-family:var(--sans);line-height:1.85;font-size:16px;
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;overflow-x:hidden;
 }
-img,svg{max-width:100%;display:block}
-.en{font-family:"Outfit",sans-serif}
-.cormo{font-family:"Cormorant Garamond",serif}
-h1,h2,h3{margin:0;font-weight:700;text-wrap:balance;line-height:1.28}
-a{color:inherit}
+svg{display:block}
+h1,h2,h3{margin:0;font-weight:400;line-height:1.16}
+a{color:inherit;text-decoration:none}
 button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
-:focus-visible{outline:2.5px solid var(--gold-lt);outline-offset:3px;border-radius:4px}
+:focus-visible{outline:1.5px solid var(--accent);outline-offset:4px}
 
-.eyebrow{font-family:"Outfit";font-weight:600;font-size:clamp(10px,2.6vw,12px);letter-spacing:.42em;
-  text-transform:uppercase;color:var(--gold);margin:0}
-.eyebrow.ink{color:var(--wine-soft)}
+/* ---- 汎用 ---- */
+.wrap{max-width:var(--mw);margin:0 auto;padding-inline:clamp(22px,6vw,64px)}
+.mono{font-family:var(--mono)}
+.label{font-family:var(--mono);font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--ink-2)}
+.label .n{color:var(--accent)}
+.rule{height:1px;background:var(--line);border:0;margin:0}
+.serif{font-family:var(--serif)}
 
-/* ---------- ボタン ---------- */
-.btn{
-  display:inline-flex;align-items:center;justify-content:center;gap:14px;min-height:56px;padding:0 30px;border-radius:999px;
-  font-size:16px;font-weight:700;letter-spacing:.04em;
-  background:linear-gradient(180deg,var(--wine-soft),var(--wine));color:var(--ivory-2);
-  border:1px solid rgba(233,207,146,.5);
-  box-shadow:0 16px 34px -18px rgba(0,0,0,.9), inset 0 1px 0 rgba(255,255,255,.14);
-  transition:transform .3s var(--spring),box-shadow .3s var(--ease),filter .3s var(--ease);
-}
-.btn:hover{transform:translateY(-3px);filter:brightness(1.07);box-shadow:0 24px 40px -18px rgba(0,0,0,.95),inset 0 1px 0 rgba(255,255,255,.22)}
-.btn:active{transform:translateY(-1px) scale(.99)}
-.btn .arw{font-family:"Outfit";font-weight:400;font-size:19px;transition:transform .3s var(--ease)}
-.btn:hover .arw{transform:translateX(4px)}
-.btn.ghost{background:transparent;color:var(--ivory);border:1px solid var(--line-gold);box-shadow:none;font-weight:500}
-.btn.ghost:hover{background:rgba(198,161,92,.1);filter:none}
-.btn.ink{background:transparent;color:var(--ink);border:1px solid var(--line-ink)}
-.btn.ink:hover{background:rgba(108,65,72,.06)}
-.btn.sm{min-height:48px;font-size:14px;padding:0 22px}
-.btn.solid-acc{background:linear-gradient(180deg,var(--acc),var(--acc-deep));border-color:rgba(255,255,255,.35);color:#fff}
+.link{display:inline-flex;align-items:center;gap:.7em;font-family:var(--mono);font-size:13px;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--ink);padding-block:6px;position:relative}
+.link::after{content:"";position:absolute;left:0;bottom:0;width:100%;height:1px;background:var(--ink);
+  transform:scaleX(1);transform-origin:left;transition:transform .5s var(--ease)}
+.link .ar{transition:transform .4s var(--ease)}
+.link:hover .ar{transform:translateX(5px)}
+.link.q::after{background:var(--accent)}
 
-/* =================================================================
-   HERO
-   ================================================================= */
-.hero{position:relative;min-height:100dvh;overflow:hidden;display:flex;flex-direction:column;
-  background:radial-gradient(130% 100% at 76% 8%, #2C1620 0%, #180D12 44%, #0B0507 100%)}
-.hero-aura{position:absolute;inset:0;z-index:0;pointer-events:none;
-  background:
-    radial-gradient(46% 40% at 74% 30%, rgba(198,161,92,.28), transparent 62%),
-    radial-gradient(50% 46% at 30% 74%, rgba(124,35,52,.35), transparent 66%),
-    radial-gradient(30% 30% at 82% 66%, rgba(233,207,146,.14), transparent 70%);
-  filter:blur(6px);animation:auraFloat 20s var(--ease) infinite alternate}
-@keyframes auraFloat{from{transform:translate(0,0) scale(1)}to{transform:translate(-16px,14px) scale(1.06)}}
-.hero-flacon{position:absolute;z-index:1;right:-20%;top:48%;transform:translateY(-50%);
-  width:min(66vw,400px);opacity:.94;pointer-events:none;filter:drop-shadow(0 40px 60px rgba(0,0,0,.6));
-  animation:heroBob 7s ease-in-out infinite}
-@media(min-width:768px){.hero-flacon{right:-4%;width:min(46vw,430px)}}
-@keyframes heroBob{0%,100%{transform:translateY(calc(-50% - 6px))}50%{transform:translateY(calc(-50% + 6px))}}
-.hero-veil{position:absolute;inset:0;z-index:2;pointer-events:none;
-  background:linear-gradient(90deg,rgba(11,5,7,.92) 0%,rgba(11,5,7,.66) 46%,rgba(11,5,7,.12) 74%,transparent 100%),
-    linear-gradient(180deg,rgba(11,5,7,.4),transparent 26%,transparent 66%,var(--noir))}
-.hero-canvas{position:absolute;inset:0;z-index:3;pointer-events:none}
-
-.topbar{position:relative;z-index:6;display:flex;align-items:center;justify-content:space-between;gap:16px;
-  max-width:var(--maxw);width:100%;margin:0 auto;padding:22px clamp(20px,5vw,48px)}
-.brand .mark{font-family:"Cormorant Garamond",serif;font-weight:600;font-size:22px;letter-spacing:.04em;color:var(--ivory-2)}
-.brand .mark b{color:var(--gold-lt);font-weight:600}
-.topbar .festival{font-family:"Outfit";font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:rgba(242,233,218,.62)}
-
-.hero-body{position:relative;z-index:6;flex:1;max-width:var(--maxw);width:100%;margin:0 auto;
-  padding:min(6vh,60px) clamp(20px,5vw,48px) clamp(30px,7vh,72px);display:flex;flex-direction:column;justify-content:center}
-.hero-eyebrow{display:flex;align-items:center;gap:14px;margin-bottom:26px}
-.hero-eyebrow .rule{height:1px;width:46px;background:linear-gradient(90deg,var(--gold),transparent)}
-.hero h1{font-family:"Shippori Mincho",serif;font-size:clamp(37px,9.6vw,84px);line-height:1.14;letter-spacing:.005em;
-  color:#fff;text-shadow:0 6px 40px rgba(0,0,0,.6);max-width:13ch}
-.hero h1 .accent{font-family:"Cormorant Garamond",serif;font-style:italic;font-weight:600;color:var(--gold-lt)}
-.hero .lead{margin:26px 0 0;max-width:33ch;font-size:clamp(15px,3.7vw,18px);color:rgba(242,233,218,.84)}
-.hero .lead b{color:var(--gold-lt);font-weight:700}
-.hero-actions{display:flex;flex-wrap:wrap;gap:14px 18px;align-items:center;margin-top:38px}
-.hero .meta{font-size:12.5px;color:rgba(242,233,218,.55);letter-spacing:.04em}
-.scroll-cue{position:relative;z-index:6;display:flex;align-items:center;gap:12px;justify-content:center;padding-bottom:24px;
-  color:rgba(242,233,218,.5);font-family:"Outfit";font-size:11px;letter-spacing:.3em;text-transform:uppercase}
-.scroll-cue .dot{width:6px;height:6px;border-radius:50%;background:var(--gold);box-shadow:0 0 10px var(--gold);animation:cuefall 2.4s var(--ease) infinite}
-@keyframes cuefall{0%{transform:translateY(-5px);opacity:0}40%{opacity:1}100%{transform:translateY(7px);opacity:0}}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.8em;min-height:56px;padding:0 30px;
+  font-family:var(--mono);font-size:13px;letter-spacing:.18em;text-transform:uppercase;
+  border:1px solid var(--ink);color:var(--ink);background:transparent;
+  transition:background .35s var(--ease),color .35s var(--ease)}
+.btn:hover{background:var(--ink);color:var(--paper)}
+.btn.sm{min-height:48px;font-size:12px;padding:0 20px}
+.btn.ghost{border-color:var(--line-2);color:var(--ink-2)}
+.btn.ghost:hover{background:transparent;color:var(--ink);border-color:var(--ink)}
 
 /* =================================================================
-   SCROLL-DRIVEN 3D STAGE
+   ヘッダー
    ================================================================= */
-.stage{position:relative;height:300vh;background:linear-gradient(180deg,var(--noir) 0%,#0F0810 42%,var(--noir) 100%)}
-.stage-inner{position:sticky;top:0;height:100dvh;overflow:hidden;display:flex;align-items:center;justify-content:center}
-.stage-glow{position:absolute;width:min(120vw,860px);aspect-ratio:1;border-radius:50%;
-  background:radial-gradient(circle,rgba(198,161,92,.22),rgba(124,35,52,.14) 42%,transparent 68%);
-  filter:blur(18px);transform:translate(var(--glowx,0),var(--glowy,0));transition:transform .1s linear}
-.stage-canvas{position:absolute;inset:0;pointer-events:none}
-.flacon-wrap{position:relative;z-index:3;width:min(58vw,300px);
-  transform:perspective(1300px) rotateY(var(--rot,0deg)) translateY(var(--fy,0px)) scale(var(--fs,1));
-  transition:transform .1s linear;will-change:transform}
-.beats{position:absolute;z-index:4;left:0;right:0;bottom:clamp(56px,15vh,130px);text-align:center;padding:0 24px;pointer-events:none}
-.beat{position:absolute;left:0;right:0;opacity:0;transform:translateY(16px);transition:opacity .5s var(--ease),transform .5s var(--ease)}
-.beat.on{opacity:1;transform:translateY(0)}
-.beat .num{font-family:"Outfit";font-weight:600;font-size:12px;letter-spacing:.4em;color:var(--gold);text-transform:uppercase}
-.beat .txt{font-family:"Shippori Mincho",serif;font-size:clamp(22px,6.4vw,42px);color:#fff;margin-top:10px;line-height:1.3}
-.stage-cta{position:absolute;z-index:5;left:50%;bottom:clamp(30px,7vh,60px);transform:translateX(-50%);opacity:0;transition:opacity .5s var(--ease)}
-.stage-cta.on{opacity:1}
+.masthead{position:sticky;top:0;z-index:30;background:color-mix(in srgb,var(--paper) 88%,transparent);
+  backdrop-filter:saturate(120%) blur(8px);border-bottom:1px solid var(--line)}
+.masthead .wrap{display:flex;align-items:center;justify-content:space-between;height:64px}
+.wordmark{font-family:var(--mono);font-weight:700;font-size:14px;letter-spacing:.26em;text-transform:uppercase}
+.wordmark span{color:var(--accent)}
+.masthead .loc{font-family:var(--mono);font-size:11px;letter-spacing:.18em;color:var(--ink-2)}
+@media(max-width:560px){.masthead .loc{display:none}}
 
 /* =================================================================
-   明るいエディトリアル面（使い方）
+   HERO（静かなエディトリアル）
    ================================================================= */
-.light{background:var(--ivory-2);color:var(--ink)}
-.section{max-width:var(--maxw);margin:0 auto;padding:clamp(64px,12vw,132px) clamp(20px,5vw,48px)}
-.sec-head{max-width:40ch}
-.sec-head h2{font-family:"Shippori Mincho",serif;font-size:clamp(26px,6.6vw,46px);color:var(--ink);margin-top:18px;line-height:1.3}
-.sec-head p{color:var(--ink-soft);margin:16px 0 0;font-size:15.5px}
-.steps{margin-top:clamp(40px,7vw,70px);display:flex;flex-direction:column}
-.step{display:grid;grid-template-columns:auto 1fr;gap:clamp(18px,5vw,48px);align-items:center;
-  padding:clamp(26px,5vw,44px) 0;border-top:1px solid var(--line-ink)}
-.step:last-child{border-bottom:1px solid var(--line-ink)}
-.step .fig{width:clamp(66px,16vw,104px)}
-.step .st-body h3{font-family:"Shippori Mincho",serif;font-size:clamp(19px,4.6vw,27px);color:var(--ink)}
-.step .st-body p{color:var(--ink-soft);margin:10px 0 0;font-size:15px;max-width:46ch}
-.step .st-tag{display:inline-block;margin-bottom:10px;font-family:"Outfit";font-size:11px;letter-spacing:.24em;
-  text-transform:uppercase;color:var(--wine-soft)}
-.spec{margin-top:clamp(34px,6vw,54px);display:flex;flex-wrap:wrap;gap:14px 34px;align-items:center;
-  padding:24px clamp(20px,4vw,32px);border-radius:16px;background:linear-gradient(180deg,#fff,#f7efe1);border:1px solid var(--line-gold)}
-.spec .lab{font-family:"Outfit";font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--wine-soft);display:block;margin-bottom:6px}
-.spec .val{font-family:"Shippori Mincho",serif;font-size:clamp(18px,4vw,22px);color:var(--ink)}
-.spec .prices b{color:var(--wine);font-feature-settings:"tnum"}
-.spec .col{min-width:120px}
-.spec .divider{width:1px;align-self:stretch;background:var(--line-ink)}
-@media(max-width:560px){.spec .divider{display:none}}
+.hero{position:relative;padding-top:clamp(48px,10vw,110px);padding-bottom:clamp(40px,8vw,80px)}
+.hero .wrap{display:grid;grid-template-columns:1fr auto;gap:clamp(24px,5vw,60px);align-items:end}
+@media(max-width:760px){.hero .wrap{grid-template-columns:1fr}}
+.hero .lead-col{max-width:20ch}
+.hero .eyebrow{display:flex;align-items:center;gap:14px;margin-bottom:clamp(26px,5vw,46px)}
+.hero .eyebrow .rule{width:44px}
+.hero h1{font-family:var(--serif);font-weight:300;font-size:clamp(44px,10.5vw,104px);
+  line-height:1.02;letter-spacing:-.015em}
+.hero h1 em{font-style:italic;color:var(--accent);font-weight:400}
+.hero .sub-en{font-family:var(--serif);font-style:italic;font-weight:300;font-size:clamp(17px,3.4vw,22px);
+  color:var(--ink-2);margin-top:22px}
+.hero .stand{font-size:15px;color:var(--ink-2);max-width:34ch;margin-top:20px;line-height:1.9}
+.hero .stand b{color:var(--ink);font-weight:500}
+.hero-cta{margin-top:clamp(30px,5vw,46px);display:flex;align-items:center;gap:26px;flex-wrap:wrap}
+.hero-cta .meta{font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:var(--ink-3)}
+.hero .flacon-col{width:clamp(120px,20vw,180px);color:var(--ink);opacity:.9}
+@media(max-width:760px){.hero .flacon-col{width:110px;justify-self:end;margin-top:-40px}}
+.hero .flacon-col svg{width:100%;height:auto}
+.hero .flacon-col .draw path,.hero .flacon-col .draw rect{stroke-dasharray:1;stroke-dashoffset:0}
+
+/* index bar（3つの事実） */
+.indexbar{border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin-top:clamp(40px,7vw,80px)}
+.indexbar .wrap{display:grid;grid-template-columns:repeat(3,1fr)}
+.indexbar .cell{padding:22px 0;border-left:1px solid var(--line)}
+.indexbar .cell:first-child{border-left:0}
+.indexbar .cell .k{font-family:var(--mono);font-size:11px;letter-spacing:.2em;color:var(--ink-3);text-transform:uppercase}
+.indexbar .cell .v{font-family:var(--serif);font-size:clamp(26px,5vw,40px);font-weight:400;margin-top:6px}
+.indexbar .cell .v small{font-size:.5em;color:var(--ink-2);font-family:var(--sans)}
+@media(max-width:560px){.indexbar .cell{padding:16px 0}.indexbar .cell .k{font-size:10px}}
 
 /* =================================================================
-   かわせみ祭案内
+   セクション見出し
    ================================================================= */
-.fest{background:linear-gradient(180deg,#0B0507,#160C11);color:var(--ivory)}
-.fest .section{display:grid;grid-template-columns:1.1fr .9fr;gap:clamp(30px,6vw,64px);align-items:start}
-@media(max-width:820px){.fest .section{grid-template-columns:1fr}}
-.fest h2{font-family:"Shippori Mincho",serif;font-size:clamp(26px,6.6vw,44px);color:#fff;margin-top:18px}
-.fest .fbody p{color:rgba(242,233,218,.82);font-size:15.5px;margin:16px 0 0;max-width:44ch}
-.fest ul{list-style:none;margin:26px 0 0;padding:0;display:flex;flex-direction:column;gap:14px}
-.fest ul li{display:flex;gap:14px;align-items:flex-start;color:rgba(242,233,218,.9);font-size:15px}
-.fest ul li::before{content:"";flex:0 0 auto;width:7px;height:7px;margin-top:9px;transform:rotate(45deg);background:var(--gold);box-shadow:0 0 8px rgba(198,161,92,.7)}
-.fcard{border:1px solid var(--line-gold);border-radius:20px;padding:clamp(22px,5vw,32px);
-  background:linear-gradient(180deg,rgba(198,161,92,.08),rgba(255,255,255,.02));position:relative;overflow:hidden}
-.fcard::before{content:"";position:absolute;left:0;right:0;top:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
-.fcard .loc-floor{display:flex;gap:12px;margin-top:6px}
-.fcard .loc-floor .fl{flex:1;text-align:center;border:1px solid var(--line-dark);border-radius:12px;padding:14px 8px}
-.fcard .loc-floor .fl b{font-family:"Cormorant Garamond",serif;font-weight:600;font-size:30px;color:var(--gold-lt);display:block;line-height:1}
-.fcard .loc-floor .fl span{font-size:12px;color:rgba(242,233,218,.72)}
-.qr-wrap{margin-top:22px;display:flex;gap:16px;align-items:center}
-.qr-box{flex:0 0 auto;width:118px;height:118px;border-radius:12px;background:#fff;padding:8px;display:flex;align-items:center;justify-content:center}
-.qr-box img{width:100%;height:100%;object-fit:contain}
-.qr-ph{width:100%;height:100%;border-radius:6px;display:flex;align-items:center;justify-content:center;text-align:center;
-  font-family:"Outfit";font-size:10px;letter-spacing:.1em;color:#9b8a6a;
-  background:repeating-linear-gradient(45deg,#efe6d2,#efe6d2 7px,#e4d8bd 7px,#e4d8bd 14px)}
-.qr-wrap .qr-cap{font-size:13px;color:rgba(242,233,218,.72)}
+.section{padding-block:clamp(60px,11vw,130px)}
+.sec-head{display:grid;grid-template-columns:auto 1fr;gap:clamp(20px,5vw,54px);align-items:baseline;margin-bottom:clamp(38px,6vw,64px)}
+@media(max-width:640px){.sec-head{grid-template-columns:1fr;gap:14px}}
+.sec-head .idx{font-family:var(--mono);font-size:12px;letter-spacing:.2em;color:var(--accent);white-space:nowrap}
+.sec-head h2{font-family:var(--serif);font-weight:300;font-size:clamp(28px,6vw,52px);letter-spacing:-.01em;max-width:16ch}
+.sec-head .note{grid-column:2;color:var(--ink-2);font-size:15px;max-width:44ch;margin-top:16px}
+@media(max-width:640px){.sec-head .note{grid-column:1}}
 
-.foot{background:var(--noir);color:rgba(242,233,218,.6);border-top:1px solid var(--line-dark)}
-.foot .section{padding-top:44px;padding-bottom:44px}
-.foot .disc{font-size:12.5px;line-height:1.9;max-width:62ch}
-.foot .fbrand{font-family:"Cormorant Garamond",serif;color:var(--ivory);font-size:19px;letter-spacing:.04em;margin-bottom:12px}
-.foot .fbrand b{color:var(--gold-lt)}
+/* 使い方（エディトリアルな行） */
+.steps{border-top:1px solid var(--line)}
+.step{display:grid;grid-template-columns:auto 1fr auto;gap:clamp(18px,5vw,48px);align-items:center;
+  padding:clamp(26px,5vw,42px) 0;border-bottom:1px solid var(--line)}
+.step .no{font-family:var(--serif);font-weight:300;font-size:clamp(30px,7vw,60px);color:var(--ink);line-height:1}
+.step .body h3{font-family:var(--jp);font-weight:600;font-size:clamp(18px,4vw,24px)}
+.step .body p{color:var(--ink-2);font-size:14.5px;margin:8px 0 0;max-width:42ch}
+.step .tag{font-family:var(--mono);font-size:10.5px;letter-spacing:.18em;color:var(--ink-3);text-transform:uppercase;text-align:right;white-space:nowrap}
+@media(max-width:640px){.step{grid-template-columns:auto 1fr}.step .tag{display:none}}
+.spec{display:flex;flex-wrap:wrap;gap:10px 40px;margin-top:clamp(30px,5vw,48px)}
+.spec .col .k{font-family:var(--mono);font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-3)}
+.spec .col .v{font-family:var(--serif);font-size:clamp(19px,4vw,24px);margin-top:4px}
+.spec .col .v b{color:var(--accent);font-weight:500}
 
-.reveal{opacity:1;transform:none}
-.js .reveal{opacity:0;transform:translateY(22px);transition:opacity .8s var(--ease),transform .8s var(--ease)}
+/* 案内 */
+.guide .wrap{display:grid;grid-template-columns:1.05fr .95fr;gap:clamp(28px,6vw,72px)}
+@media(max-width:820px){.guide .wrap{grid-template-columns:1fr}}
+.guide ul{list-style:none;margin:26px 0 0;padding:0;border-top:1px solid var(--line)}
+.guide ul li{padding:16px 0;border-bottom:1px solid var(--line);display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:baseline;font-size:15px;color:var(--ink)}
+.guide ul li .m{font-family:var(--mono);font-size:11px;color:var(--accent)}
+.locbox{border:1px solid var(--line-2);padding:clamp(22px,5vw,34px)}
+.locbox .floors{display:flex;gap:0;border-top:1px solid var(--line);margin-top:18px}
+.locbox .fl{flex:1;padding:18px 0;border-left:1px solid var(--line);text-align:center}
+.locbox .fl:first-child{border-left:0}
+.locbox .fl b{font-family:var(--serif);font-weight:300;font-size:34px;display:block;line-height:1}
+.locbox .fl span{font-family:var(--mono);font-size:10px;letter-spacing:.12em;color:var(--ink-3);text-transform:uppercase}
+.qr{display:flex;gap:18px;align-items:center;margin-top:24px}
+.qr .box{width:104px;height:104px;border:1px solid var(--line-2);padding:7px;flex:0 0 auto}
+.qr .box img{width:100%;height:100%;object-fit:contain}
+.qr .ph{width:100%;height:100%;display:flex;align-items:center;justify-content:center;text-align:center;
+  font-family:var(--mono);font-size:9px;letter-spacing:.1em;color:var(--ink-3);
+  background:repeating-linear-gradient(45deg,#e6dfce,#e6dfce 6px,#ded6c2 6px,#ded6c2 12px)}
+.qr .cap{font-size:13px;color:var(--ink-2)}
+
+.foot{border-top:1px solid var(--line);padding-block:40px}
+.foot .wrap{display:flex;flex-wrap:wrap;gap:18px;justify-content:space-between;align-items:flex-start}
+.foot .disc{font-size:12px;color:var(--ink-3);max-width:62ch;line-height:1.9}
+.foot .fm{font-family:var(--mono);font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--ink-2)}
+
+/* reveal */
+.reveal{opacity:1}
+.js .reveal{opacity:0;transform:translateY(16px);transition:opacity .9s var(--ease),transform .9s var(--ease)}
 .js .reveal.in{opacity:1;transform:none}
-.js .reveal.d1{transition-delay:.08s}.js .reveal.d2{transition-delay:.16s}.js .reveal.d3{transition-delay:.24s}
+.js .reveal.d1{transition-delay:.07s}.js .reveal.d2{transition-delay:.14s}.js .reveal.d3{transition-delay:.21s}
 
 /* =================================================================
    診断オーバーレイ
    ================================================================= */
-.quiz{position:fixed;inset:0;z-index:60;display:none;color:var(--ivory);
-  background:radial-gradient(120% 90% at 50% 0%,#241019 0%,#140A10 52%,#0A0406 100%)}
+.quiz{position:fixed;inset:0;z-index:60;display:none;background:var(--paper-2);color:var(--ink)}
 .quiz.open{display:flex;flex-direction:column}
-.quiz-canvas{position:absolute;inset:0;pointer-events:none;opacity:.8}
-.quiz-top{position:relative;z-index:2;max-width:640px;width:100%;margin:0 auto;padding:20px clamp(20px,6vw,32px) 6px;display:flex;align-items:center;gap:16px}
-.q-back{flex:0 0 auto;width:46px;height:46px;border-radius:50%;border:1px solid var(--line-gold);display:flex;align-items:center;justify-content:center;font-size:20px;transition:background .2s,transform .2s}
-.q-back:hover{background:rgba(198,161,92,.12);transform:translateX(-2px)}
-.q-progress{flex:1}
-.q-count{display:flex;justify-content:space-between;font-family:"Outfit";font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:rgba(242,233,218,.6);margin-bottom:9px}
-.q-count b{color:var(--gold-lt)}
-.q-track{height:3px;border-radius:2px;background:rgba(233,207,146,.16);overflow:hidden}
-.q-bar{height:100%;width:20%;border-radius:2px;background:linear-gradient(90deg,var(--gold),var(--gold-lt));box-shadow:0 0 10px rgba(198,161,92,.6);transition:width .5s var(--ease)}
-.quiz-stage{position:relative;z-index:2;flex:1;display:flex;align-items:center;justify-content:center;padding:10px clamp(20px,6vw,32px) max(28px,env(safe-area-inset-bottom));overflow-y:auto}
-.qpanel{max-width:640px;width:100%;margin:auto}
-.qpanel .kicker{font-family:"Outfit";font-size:11px;letter-spacing:.36em;text-transform:uppercase;color:var(--gold);text-align:center}
-.qpanel h2{font-family:"Shippori Mincho",serif;font-size:clamp(24px,6.6vw,38px);color:#fff;text-align:center;margin:16px auto 30px;max-width:18ch;line-height:1.4}
-.opts{display:flex;flex-direction:column;gap:14px}
-.opts.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-@media(max-width:420px){.opts.grid{grid-template-columns:1fr}}
-.opt{position:relative;text-align:left;width:100%;min-height:64px;display:flex;align-items:center;gap:16px;padding:18px 20px;border-radius:16px;
-  background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.02));border:1px solid var(--line-gold);color:var(--ivory);
-  transition:transform .28s var(--spring),border-color .28s var(--ease),background .28s var(--ease),box-shadow .28s var(--ease)}
-.opt:hover{transform:translateY(-3px);border-color:var(--gold-lt);box-shadow:0 18px 30px -20px rgba(0,0,0,.9)}
-.opt:active{transform:scale(.975)}
-.opt.grid-opt{min-height:88px;flex-direction:column;align-items:flex-start;justify-content:center;gap:6px}
-.opt .mk{flex:0 0 auto;width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:"Shippori Mincho",serif;font-weight:700;font-size:17px;color:var(--gold-lt);border:1px solid var(--line-gold);background:rgba(0,0,0,.2)}
-.opt .ol{font-family:"Shippori Mincho",serif;font-size:18px;color:#fff;font-weight:600}
-.opt .oh{font-size:12.5px;color:rgba(242,233,218,.66)}
-.opt.chosen{border-color:var(--gold-lt);background:linear-gradient(180deg,rgba(198,161,92,.22),rgba(198,161,92,.08));transform:scale(1.015);box-shadow:0 0 0 1px var(--gold-lt),0 20px 34px -18px rgba(0,0,0,.9)}
-.qpanel.leave{opacity:0;transform:translateY(-14px);transition:opacity .26s var(--ease),transform .26s var(--ease)}
-.qpanel.enter{opacity:0;transform:translateY(18px)}
-.qpanel.enter.settled{opacity:1;transform:none;transition:opacity .34s var(--ease),transform .34s var(--ease)}
+.quiz-top{border-bottom:1px solid var(--line)}
+.quiz-top .wrap{display:flex;align-items:center;gap:18px;height:64px;max-width:720px}
+.q-back{font-family:var(--mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-2);display:inline-flex;gap:8px;align-items:center;min-height:44px}
+.q-back:hover{color:var(--ink)}
+.q-prog{flex:1;display:flex;align-items:center;gap:16px}
+.q-prog .c{font-family:var(--mono);font-size:12px;letter-spacing:.14em;color:var(--ink-2)}
+.q-prog .c b{color:var(--accent)}
+.q-track{flex:1;height:1px;background:var(--line);position:relative}
+.q-bar{position:absolute;left:0;top:0;height:1px;background:var(--accent);width:20%;transition:width .55s var(--ease)}
+.quiz-stage{flex:1;display:flex;align-items:center;overflow-y:auto}
+.qpanel{width:100%;max-width:720px;margin:0 auto;padding:clamp(28px,6vw,56px) clamp(22px,6vw,64px)}
+.qpanel .kick{font-family:var(--mono);font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--accent)}
+.qpanel h2{font-family:var(--jp);font-weight:600;font-size:clamp(24px,6vw,40px);margin:16px 0 clamp(30px,5vw,46px);max-width:20ch;line-height:1.4}
+.opts{border-top:1px solid var(--line)}
+.opt{display:grid;grid-template-columns:auto 1fr auto;gap:clamp(14px,4vw,26px);align-items:center;width:100%;text-align:left;
+  padding:clamp(18px,4vw,26px) 6px;border-bottom:1px solid var(--line);min-height:64px;
+  transition:padding-left .4s var(--ease),background .3s var(--ease)}
+.opt:hover{padding-left:16px;background:linear-gradient(90deg,var(--sel),transparent 60%)}
+.opt .mk{font-family:var(--mono);font-size:12px;width:34px;height:34px;border:1px solid var(--line-2);border-radius:50%;
+  display:flex;align-items:center;justify-content:center;color:var(--ink-2);transition:border-color .3s,color .3s,background .3s}
+.opt:hover .mk,.opt.chosen .mk{border-color:var(--accent);color:var(--accent)}
+.opt.chosen .mk{background:var(--accent);color:var(--paper-2)}
+.opt .ol{font-family:var(--jp);font-weight:600;font-size:clamp(17px,4vw,21px)}
+.opt .oh{font-size:12.5px;color:var(--ink-3);margin-top:2px}
+.opt .ar{font-family:var(--mono);color:var(--ink-3);opacity:0;transform:translateX(-6px);transition:opacity .3s,transform .3s}
+.opt:hover .ar,.opt.chosen .ar{opacity:1;transform:none;color:var(--accent)}
+.qpanel.leave{opacity:0;transform:translateY(-10px);transition:opacity .24s var(--ease),transform .24s var(--ease)}
+.qpanel.enter{opacity:0;transform:translateY(14px)}
+.qpanel.enter.settled{opacity:1;transform:none;transition:opacity .4s var(--ease),transform .4s var(--ease)}
 
 /* =================================================================
-   結果（香水ごとに世界観が変わる／ダブルフレーム＋生成ビジュアル）
+   結果 ＝ 調香処方（FORMULA）ラベル
    ================================================================= */
-.result{position:fixed;inset:0;z-index:70;display:none;overflow-y:auto;color:var(--ink);
-  background:radial-gradient(120% 70% at 50% -6%, color-mix(in srgb,var(--acc) 30%,transparent) 0%, transparent 58%),
-    linear-gradient(180deg,var(--acc-bg) 0%,#FBF7F0 62%,var(--ivory-2) 100%)}
+.result{position:fixed;inset:0;z-index:70;display:none;overflow-y:auto;background:var(--paper);color:var(--ink)}
 .result.open{display:block}
-.result-inner{max-width:540px;margin:0 auto;padding:clamp(26px,7vw,54px) clamp(18px,5vw,28px) 60px;min-height:100dvh;display:flex;flex-direction:column;justify-content:center}
-.result-head{text-align:center;margin-bottom:20px}
-.result-head .rk{font-family:"Outfit";font-size:11px;letter-spacing:.4em;text-transform:uppercase;color:var(--acc-deep)}
-.result-head .rt{font-family:"Shippori Mincho",serif;font-size:clamp(15px,3.8vw,17px);color:var(--ink-soft);margin-top:8px}
-.result-head .code{display:inline-block;margin-top:8px;font-family:"Outfit";font-weight:600;font-size:12px;letter-spacing:.3em;color:var(--acc-deep);
-  border:1px solid color-mix(in srgb,var(--acc) 55%,transparent);border-radius:999px;padding:5px 15px}
-.plate{position:relative;border-radius:20px;padding:12px;
-  background:linear-gradient(150deg,color-mix(in srgb,var(--acc) 30%,#fff) 0%,#fff 46%,color-mix(in srgb,var(--acc) 20%,#fff) 100%);
-  box-shadow:0 40px 70px -40px rgba(60,20,30,.5),0 2px 0 rgba(255,255,255,.7) inset;
-  transform:scale(.96);opacity:0}
-.result.show-plate .plate{transform:scale(1);opacity:1;transition:transform .6s var(--spring),opacity .5s var(--ease)}
-.plate::after{content:"";position:absolute;inset:7px;border-radius:15px;border:1px solid color-mix(in srgb,var(--acc-deep) 40%,transparent);pointer-events:none}
-.scene-art{position:relative;border-radius:13px;overflow:hidden;aspect-ratio:4/5;
-  background:radial-gradient(120% 100% at 50% 0%,color-mix(in srgb,var(--acc) 42%,#fff),var(--acc-bg) 70%)}
-.scene-art .art-svg{position:absolute;inset:0;width:100%;height:100%}
-.scene-art .petal{position:absolute;border-radius:60% 40% 55% 45%;opacity:.55;filter:blur(.3px);
-  background:color-mix(in srgb,var(--acc) 70%,#fff);animation:petalFall linear infinite}
-@keyframes petalFall{0%{transform:translateY(-12%) rotate(0)}100%{transform:translateY(120%) rotate(220deg)}}
-.scene-art .art-label{position:absolute;left:0;right:0;bottom:14px;text-align:center;z-index:3}
-.scene-art .art-label .fs{font-family:"Cormorant Garamond",serif;font-weight:600;font-size:clamp(22px,7vw,30px);color:var(--acc-deep);letter-spacing:.02em}
-.scene-art .art-label .sm{font-family:"Outfit";font-size:10px;letter-spacing:.28em;text-transform:uppercase;color:color-mix(in srgb,var(--acc-deep) 80%,#000);margin-top:2px}
-.plate .badge{position:absolute;top:16px;left:16px;z-index:4;font-family:"Outfit";font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:#fff;
-  background:color-mix(in srgb,var(--acc-deep) 80%,#000 4%);border:1px solid rgba(255,255,255,.5);border-radius:999px;padding:6px 13px;box-shadow:0 6px 16px rgba(0,0,0,.3)}
-.rname{text-align:center;margin-top:24px}
-.rname .n{font-family:"Shippori Mincho",serif;font-size:clamp(26px,7vw,38px);color:var(--ink);line-height:1.2}
-.rname .sub{font-family:"Outfit";font-size:12px;letter-spacing:.26em;text-transform:uppercase;color:var(--acc-deep);margin-top:8px}
-.rtag{font-family:"Shippori Mincho",serif;font-size:clamp(16px,4.4vw,20px);color:var(--acc-deep);text-align:center;margin:18px auto 0;max-width:26ch;line-height:1.7}
-.chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:18px}
-.chips span{font-size:12px;letter-spacing:.06em;color:var(--acc-deep);border:1px solid color-mix(in srgb,var(--acc) 55%,transparent);border-radius:999px;padding:5px 14px;background:rgba(255,255,255,.5)}
-.rdesc{text-align:center;color:var(--ink);font-size:14.5px;line-height:2;margin:20px auto 0;max-width:34ch}
-.notes{display:flex;justify-content:center;margin:22px auto 0;max-width:420px;border:1px solid color-mix(in srgb,var(--acc) 40%,transparent);border-radius:14px;overflow:hidden;background:rgba(255,255,255,.55)}
-.notes .nt{flex:1;padding:14px 10px;text-align:center}
-.notes .nt+.nt{border-left:1px solid color-mix(in srgb,var(--acc) 30%,transparent)}
-.notes .nt .l{font-family:"Outfit";font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--acc-deep)}
-.notes .nt .v{font-size:12px;color:var(--ink);margin-top:6px;line-height:1.6}
-.scene{margin:22px auto 0;max-width:420px;text-align:center;background:rgba(255,255,255,.6);border:1px solid color-mix(in srgb,var(--acc) 35%,transparent);border-radius:14px;padding:16px 18px}
-.scene .l{font-family:"Outfit";font-size:10px;letter-spacing:.24em;text-transform:uppercase;color:var(--acc-deep)}
-.scene .purpose{font-size:14px;color:var(--ink);margin-top:8px}
-.scene .price{margin-top:12px;font-family:"Shippori Mincho",serif;font-size:20px;color:var(--ink)}
-.scene .price b{color:var(--acc-deep);font-feature-settings:"tnum"}
-.scene .place{font-size:12.5px;color:var(--ink-soft);margin-top:8px}
+.result-inner{max-width:560px;margin:0 auto;padding:clamp(26px,7vw,56px) clamp(22px,6vw,32px) 60px;min-height:100dvh;display:flex;flex-direction:column;justify-content:center}
+.result .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:22px}
+.result .top .l{font-family:var(--mono);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-2)}
+.result .top .x{font-family:var(--mono);font-size:12px;color:var(--ink-2);min-height:44px;display:inline-flex;align-items:center;gap:6px}
+
+/* ラベル本体 */
+.formula{background:var(--card);border:1px solid var(--line-2);position:relative;
+  padding:clamp(28px,7vw,44px) clamp(24px,6vw,40px);
+  transform:translateY(14px);opacity:0}
+.result.show .formula{transform:none;opacity:1;transition:opacity .7s var(--ease),transform .7s var(--ease)}
+.formula::before{content:"";position:absolute;left:0;right:0;top:0;height:3px;background:var(--acc,#7E2B2B)}
+.formula .fhead{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.formula .fhead .wm{font-family:var(--mono);font-size:10.5px;letter-spacing:.24em;text-transform:uppercase;color:var(--ink-2)}
+.formula .fhead .swatch{width:16px;height:16px;border-radius:50%;background:var(--acc,#7E2B2B);border:1px solid rgba(0,0,0,.15)}
+.formula .kicker{font-family:var(--mono);font-size:10.5px;letter-spacing:.28em;text-transform:uppercase;color:var(--acc,#7E2B2B);margin-top:26px;text-align:center}
+.formula .fname{font-family:var(--serif);font-weight:300;font-size:clamp(34px,9vw,50px);text-align:center;line-height:1.06;margin-top:12px;letter-spacing:-.01em}
+.formula .fsub{font-family:var(--mono);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-2);text-align:center;margin-top:12px}
+.formula .ftag{font-family:var(--jp);font-size:clamp(15px,3.8vw,17px);color:var(--ink);text-align:center;margin-top:20px;line-height:1.7}
+.formula .chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:16px}
+.formula .chips span{font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;color:var(--ink-2);border:1px solid var(--line-2);padding:5px 11px}
+.formula .divider{display:flex;align-items:center;gap:12px;margin:26px 0;color:var(--ink-3)}
+.formula .divider::before,.formula .divider::after{content:"";flex:1;height:1px;background:var(--line)}
+.formula .divider .d{width:5px;height:5px;background:var(--acc,#7E2B2B);transform:rotate(45deg)}
+.notes{display:flex;flex-direction:column;gap:0}
+.notes .row{display:grid;grid-template-columns:74px 1fr;gap:14px;padding:11px 0;border-bottom:1px solid var(--line);align-items:baseline}
+.notes .row:last-child{border-bottom:0}
+.notes .row .k{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-3)}
+.notes .row .v{font-family:var(--jp);font-size:14.5px}
+.fmeta{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:24px}
+.fmeta .m .k{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-3)}
+.fmeta .m .v{font-family:var(--serif);font-size:17px;margin-top:4px}
+.fmeta .m .v b{color:var(--acc,#7E2B2B);font-weight:500}
+.fnote{font-size:13px;color:var(--ink-2);text-align:center;margin-top:22px;line-height:1.8}
+.fseal{display:flex;justify-content:center;margin-top:22px;color:var(--acc,#7E2B2B);opacity:.8}
+.fseal svg{width:34px;height:auto}
+
 .r-actions{display:flex;flex-direction:column;gap:11px;margin-top:26px}
 .r-actions .row{display:flex;gap:11px}.r-actions .row>*{flex:1}
-.result .disc{font-size:11px;color:var(--ink-soft);text-align:center;line-height:1.8;margin:22px auto 0;max-width:40ch}
+.result .disc{font-size:11px;color:var(--ink-3);text-align:center;line-height:1.8;margin-top:22px;max-width:40ch;margin-inline:auto}
 
-.toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,20px);z-index:120;background:var(--ink);color:var(--ivory-2);padding:13px 24px;border-radius:999px;font-size:13.5px;letter-spacing:.03em;border:1px solid var(--line-gold);box-shadow:0 16px 34px -14px rgba(0,0,0,.7);opacity:0;pointer-events:none;transition:opacity .3s,transform .3s}
+.toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,16px);z-index:120;background:var(--ink);color:var(--paper);
+  font-family:var(--mono);font-size:12px;letter-spacing:.08em;padding:13px 22px;opacity:0;pointer-events:none;transition:opacity .3s,transform .3s}
 .toast.show{opacity:1;transform:translate(-50%,0)}
 
-@media(min-width:768px){.hero h1{font-size:clamp(58px,8vw,84px)}}
-@media(max-width:380px){.btn{font-size:15px;padding:0 24px}.step{grid-template-columns:1fr;gap:10px}}
 @media (prefers-reduced-motion:reduce){
-  *{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.001ms !important}
-  .hero-aura,.hero-flacon{animation:none}
-  .flacon-wrap,.stage-glow{transition:none}
-  .beat{opacity:1;position:relative;transform:none;margin-bottom:12px}.beat:not(.on){display:none}
-  .scene-art .petal{display:none}
-  .js .reveal{opacity:1;transform:none}
-  .plate{opacity:1;transform:none}
+  *{animation:none!important;transition-duration:.001ms!important}
+  .js .reveal{opacity:1;transform:none}.formula{opacity:1;transform:none}
 }
+
+/* =================================================================
+   MATERIAL & WEIGHT — 物質感と重心（加算レイヤー / 既存を上書きしない）
+   ================================================================= */
+/* 紙の地：全面に敷く（コンテンツの背後） */
+body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background:url("assets/w/mat-paper.webp") center/cover no-repeat;
+  mix-blend-mode:multiply;opacity:.60}
+/* フィルムグレイン：全面の最前面（触感） */
+body::after{content:"";position:fixed;inset:0;z-index:200;pointer-events:none;
+  background:url("assets/w/mat-grain.webp") repeat;background-size:300px;
+  mix-blend-mode:overlay;opacity:.45}
+
+/* Hero：霧がゆっくり流れる */
+.hero{position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;inset:-6%;z-index:0;pointer-events:none;
+  background:url("assets/w/mat-mist.webp") center/cover no-repeat;opacity:.42;
+  animation:mistDrift 46s cubic-bezier(.4,0,.2,1) infinite alternate}
+.hero > .wrap{position:relative;z-index:1}
+@keyframes mistDrift{from{transform:translate3d(-2%,1%,0) scale(1.04)}to{transform:translate3d(2%,-1%,0) scale(1.12)}}
+
+/* 重心：インデックスバーを濃色の帯にして画面に錨を打つ */
+.indexbar{background:#1A1813;border-top-color:transparent;border-bottom-color:transparent;
+  box-shadow:0 30px 60px -46px rgba(26,24,19,.9)}
+.indexbar .cell{padding:34px 0;border-left-color:rgba(240,234,220,.16)}
+.indexbar .cell .k{color:rgba(240,234,220,.52)}
+.indexbar .cell .v{color:#F4EEE0}
+.indexbar .cell .v small{color:rgba(240,234,220,.5)}
+
+/* 主CTA：塊としての重み＋アイコンを自身の円に納める */
+#startBtn{background:#1A1813;color:#F4EEE0;border-radius:999px;
+  min-height:62px;padding:0 12px 0 30px;gap:18px;
+  font-family:var(--mono);font-size:12.5px;letter-spacing:.2em;text-transform:uppercase;
+  box-shadow:0 20px 38px -20px rgba(26,24,19,.75), inset 0 1px 0 rgba(255,255,255,.10);
+  transition:transform .55s var(--ease),box-shadow .55s var(--ease)}
+#startBtn::after{content:none}
+#startBtn .ar{width:38px;height:38px;border-radius:50%;background:rgba(244,238,224,.14);
+  display:inline-flex;align-items:center;justify-content:center;
+  transition:transform .45s var(--ease),background .45s var(--ease)}
+#startBtn:hover{transform:translateY(-2px);box-shadow:0 30px 50px -22px rgba(26,24,19,.85), inset 0 1px 0 rgba(255,255,255,.14)}
+#startBtn:hover .ar{transform:translateX(4px) translateY(-1px);background:rgba(244,238,224,.22)}
+#startBtn:active{transform:translateY(0) scale(.99)}
+
+/* 処方カード：シルクの織り＋二重ベゼル＋沈む影 */
+.result .formula{
+  background-color:var(--card);
+  background-image:linear-gradient(rgba(246,241,230,.74),rgba(246,241,230,.74)),url("assets/w/mat-silk.webp");
+  background-size:auto,cover;background-position:center,center;
+  box-shadow:0 0 0 9px #EDE6D7, 0 0 0 10px rgba(33,31,25,.20),
+             0 46px 80px -40px rgba(33,25,18,.55)}
+
+@media (prefers-reduced-motion:reduce){
+  .hero::after{animation:none}
+}
+
+
+/* =================================================================
+   REDESIGN — 「彫刻された調香所」：濃インクの重心 × ギヨシェ × 巨大セリフ
+   ================================================================= */
+:root{ --ink-deep:#17150F; --ivory:#F3EDDF; --brass:#C9A961; }
+
+/* 常設のダークな錨（レターヘッド） */
+.masthead{background:var(--ink-deep);border-bottom-color:rgba(243,237,223,.14);backdrop-filter:none}
+.masthead .wordmark{color:var(--ivory)}
+.masthead .wordmark span{color:var(--brass)}
+.masthead .loc{color:rgba(243,237,223,.55)}
+
+/* HERO：ダークな舞台＋ギヨシェの紋章 */
+.hero{background:var(--ink-deep);color:var(--ivory);
+  padding-top:clamp(76px,13vw,160px);padding-bottom:clamp(76px,13vw,160px)}
+.hero::before{content:"";position:absolute;z-index:0;pointer-events:none;
+  width:min(128vw,1180px);aspect-ratio:1;right:-18%;top:50%;
+  background-color:var(--brass);
+  -webkit-mask:url("assets/w/orn-rosette-mask.webp") center/contain no-repeat;
+  mask:url("assets/w/orn-rosette-mask.webp") center/contain no-repeat;
+  opacity:.30;transform:translateY(-50%);
+  animation:ornSpin 220s linear infinite}
+@keyframes ornSpin{from{transform:translateY(-50%) rotate(0)}to{transform:translateY(-50%) rotate(360deg)}}
+.hero::after{opacity:.22}
+.hero h1{color:#FCF8F0;font-size:clamp(54px,12.5vw,136px);letter-spacing:-.035em;line-height:.98}
+.hero h1 em{color:var(--brass)}
+.hero .sub-en{color:rgba(243,237,223,.62);margin-top:26px}
+.hero .stand{color:rgba(243,237,223,.72)}
+.hero .stand b{color:var(--ivory);font-weight:500}
+.hero .eyebrow .rule{background:rgba(201,169,97,.65)}
+.hero .label{color:rgba(243,237,223,.60)}
+.hero .label .n{color:var(--brass)}
+.hero .flacon-col{color:rgba(243,237,223,.50);opacity:1}
+.hero-cta .meta{color:rgba(243,237,223,.45)}
+
+/* CTA：ダーク上では紙色の塊に反転 */
+#startBtn{background:var(--ivory);color:var(--ink-deep);
+  box-shadow:0 22px 40px -20px rgba(0,0,0,.8), inset 0 1px 0 rgba(255,255,255,.5)}
+#startBtn .ar{background:rgba(23,21,15,.10)}
+#startBtn:hover{box-shadow:0 32px 54px -22px rgba(0,0,0,.9), inset 0 1px 0 rgba(255,255,255,.6)}
+#startBtn:hover .ar{background:rgba(23,21,15,.18)}
+
+/* インデックスバー：紙に戻して明暗のリズムをつくる */
+.indexbar{background:transparent;box-shadow:none;margin-top:0;
+  border-top:0;border-bottom:1px solid var(--line)}
+.indexbar .cell{padding:30px 0;border-left-color:var(--line)}
+.indexbar .cell .k{color:var(--ink-3)}
+.indexbar .cell .v{color:var(--ink)}
+.indexbar .cell .v small{color:var(--ink-2)}
+
+/* セクション見出しのスケールを上げる */
+.sec-head h2{font-size:clamp(32px,7vw,64px);letter-spacing:-.02em}
+
+/* ギヨシェの帯（区切り） */
+.guil-band{height:34px;margin:0;
+  background-color:var(--ink);
+  -webkit-mask:url("assets/w/orn-band-mask.webp") center/1100px 100% repeat-x;
+  mask:url("assets/w/orn-band-mask.webp") center/1100px 100% repeat-x;opacity:.40}
+
+/* 処方カード：ギヨシェの透かし */
+.result .formula::after{content:"";position:absolute;left:50%;top:52%;width:78%;aspect-ratio:1;
+  transform:translate(-50%,-50%);pointer-events:none;
+  background-color:var(--accent);
+  -webkit-mask:url("assets/w/orn-rosette-mask.webp") center/contain no-repeat;
+  mask:url("assets/w/orn-rosette-mask.webp") center/contain no-repeat;opacity:.10}
+.result .formula > *{position:relative;z-index:1}
+
+@media (prefers-reduced-motion:reduce){ .hero::before{animation:none} }
+@media(max-width:760px){ .hero::before{right:-42%;opacity:.18} }
+
+
+/* 見出しの折返し修正：lead-col の 20ch（≒160px）が巨大セリフを1文字ずつ折り返していた */
+.hero .lead-col{max-width:none}
+.hero h1{font-size:clamp(46px,9.6vw,118px);max-width:none}
+.hero .sub-en{max-width:30ch}
+@media(max-width:760px){ .hero h1{font-size:clamp(42px,11.5vw,72px)} }
+
+
+/* =================================================================
+   CRIMSON / RED CARPET — 真紅・ダークベリー・劇場の重心
+   トークンを再定義して全面を反転（既存セレクタはそのまま活きる）
+   ================================================================= */
+:root{
+  --paper:#140A0E; --paper-2:#1B0E13; --card:#201016;
+  --ink:#F4EEE2; --ink-2:rgba(244,238,226,.74); --ink-3:rgba(244,238,226,.50);
+  --line:rgba(244,238,226,.15); --line-2:rgba(244,238,226,.28);
+  --accent:#C2304A; --gold:#C9A961; --sel:rgba(194,48,74,.18);
+  --crimson:#8E0E24; --berry:#3A0A1E; --ivory:#F4EEE2; --brass:#C9A961;
+  --ink-deep:#0E0508;
+}
+body{background:var(--paper);color:var(--ink)}
+/* 地：赤ベルベットを極薄で敷く（紙をやめる） */
+body::before{background:url("assets/w/raw-mt-redvelvet.webp") center/cover no-repeat;
+  mix-blend-mode:soft-light;opacity:.34}
+body::after{opacity:.34}
+::selection{background:var(--sel)}
+
+/* ヘッダー */
+.masthead{background:rgba(14,5,8,.82);backdrop-filter:saturate(140%) blur(10px);
+  border-bottom-color:rgba(201,169,97,.22)}
+.masthead .wordmark{color:var(--ivory)} .masthead .wordmark span{color:var(--brass)}
+.masthead .loc{color:rgba(244,238,226,.55)}
+
+/* HERO：クリムゾンの舞台 */
+.hero{background:
+    linear-gradient(180deg,rgba(14,5,8,.62) 0%,rgba(14,5,8,.30) 42%,var(--paper) 100%),
+    url("assets/w/raw-bg-crimson.webp") center 30%/cover no-repeat;
+  background-color:var(--ink-deep)}
+.hero::before{opacity:.20;background-color:var(--brass)}   /* ギヨシェ紋章は金のまま */
+.hero::after{opacity:.14}
+.hero h1{color:#FFF8F0;text-shadow:0 10px 44px rgba(0,0,0,.6)}
+.hero h1 em{color:#E8B4577F;color:var(--brass)}
+.hero .sub-en{color:rgba(244,238,226,.66)}
+.hero .stand{color:rgba(244,238,226,.76)} .hero .stand b{color:var(--ivory)}
+.hero .eyebrow .rule{background:linear-gradient(90deg,var(--brass),transparent)}
+.hero .label{color:rgba(244,238,226,.62)} .hero .label .n{color:var(--brass)}
+.hero-cta .meta{color:rgba(244,238,226,.46)}
+
+/* ヒーローの主役を写真のフラコンに差し替え */
+.hero .flacon-col{width:clamp(150px,25vw,290px);aspect-ratio:.60;opacity:1;
+  background:url("assets/w/cut-fl-crimson.webp") center bottom/contain no-repeat;
+  filter:drop-shadow(0 40px 46px rgba(0,0,0,.72))}
+.hero .flacon-col svg{display:none}
+
+/* CTA：アイボリーの塊＋金のリング */
+#startBtn{background:var(--ivory);color:#1A0A0E;box-shadow:0 0 0 1px rgba(201,169,97,.55),
+  0 26px 46px -20px rgba(0,0,0,.9)}
+#startBtn .ar{background:rgba(26,10,14,.10)}
+#startBtn:hover .ar{background:rgba(26,10,14,.18)}
+
+/* index bar / 罫線 */
+.indexbar{border-bottom-color:rgba(201,169,97,.22)}
+.indexbar .cell{border-left-color:rgba(244,238,226,.14)}
+.indexbar .cell .v{color:var(--ivory)}
+.sec-head .idx{color:var(--brass)}
+.sec-head h2{color:#FFF8F0}
+.step{border-bottom-color:rgba(244,238,226,.13)}
+.steps{border-top-color:rgba(244,238,226,.13)}
+.step .no{color:var(--brass)}
+.guil-band{background-color:var(--brass);opacity:.32}
+
+/* ボタン全般 */
+.btn{border-color:rgba(244,238,226,.42);color:var(--ivory)}
+.btn:hover{background:var(--ivory);color:#1A0A0E}
+.btn.ghost{border-color:rgba(244,238,226,.24);color:rgba(244,238,226,.72)}
+
+/* 結果：ダークベリーの処方カード */
+.result{background:linear-gradient(180deg,var(--ink-deep),var(--paper))}
+.result .formula{
+  background-color:var(--card);
+  background-image:linear-gradient(rgba(30,15,20,.74),rgba(30,15,20,.82)),url("assets/w/raw-mt-redsilk.webp");
+  background-size:auto,cover;
+  border-color:rgba(201,169,97,.34);
+  box-shadow:0 0 0 9px rgba(20,10,14,.9), 0 0 0 10px rgba(201,169,97,.26),
+             0 60px 90px -46px rgba(0,0,0,.95)}
+.result .formula::before{background:linear-gradient(90deg,transparent,var(--brass),transparent);height:1px}
+.result .formula::after{background-color:var(--brass);opacity:.12}
+.formula .fname{color:#FFF8F0}
+.formula .fhead .wm{color:rgba(244,238,226,.6)}
+.formula .chips span{border-color:rgba(201,169,97,.38);color:rgba(244,238,226,.82)}
+.formula .kicker{color:var(--brass)}
+
+/* 香水ごとの肖像（フラコン＋ノート植物） */
+.formula .portrait{position:relative;height:clamp(190px,42vw,260px);margin:20px 0 4px;
+  display:flex;align-items:flex-end;justify-content:center}
+.formula .portrait .fl{height:100%;position:relative;z-index:2;
+  filter:drop-shadow(0 26px 30px rgba(0,0,0,.7))}
+.formula .portrait .bo{position:absolute;bottom:-4%;height:54%;z-index:1;opacity:.95;
+  filter:drop-shadow(0 14px 18px rgba(0,0,0,.55))}
+.formula .portrait .bo.l{left:0;transform:rotate(-7deg)}
+.formula .portrait .bo.r{right:0;transform:rotate(8deg)}
+
+
+/* 肖像の背後に光を置き フラコンを浮かせる */
+.formula .portrait::before{content:"";position:absolute;left:50%;top:46%;width:78%;aspect-ratio:1;
+  transform:translate(-50%,-50%);border-radius:50%;pointer-events:none;z-index:0;
+  background:radial-gradient(circle, rgba(255,228,190,.30), rgba(255,214,170,.10) 46%, transparent 70%)}
+.formula .fhead .wm{color:rgba(244,238,226,.78)}
+.formula .ftag{color:rgba(244,238,226,.92)}
+.formula .notes .v{color:rgba(244,238,226,.92)}
+.formula .notes .k{color:var(--brass)}
+
+
+/* ===== 選択画面：各選択肢に固有のビジュアル ===== */
+.quiz{background:linear-gradient(180deg,rgba(12,5,8,.90),rgba(12,5,8,.96)),
+  url("assets/w/raw-bg-quiz.webp") center/cover no-repeat;background-color:#0C0508}
+.opt{grid-template-columns:auto 1fr auto;padding-block:clamp(12px,3vw,16px)}
+.opt .thumb{width:clamp(74px,20vw,104px);aspect-ratio:1;border-radius:2px;
+  background-size:cover;background-position:center;
+  box-shadow:0 0 0 1px rgba(201,169,97,.28), 0 18px 28px -18px rgba(0,0,0,.9);
+  filter:saturate(.92) brightness(.86);
+  transition:transform .55s var(--ease),filter .55s var(--ease),box-shadow .55s var(--ease)}
+.opt:hover .thumb,.opt.chosen .thumb{transform:scale(1.04);filter:saturate(1.05) brightness(1);
+  box-shadow:0 0 0 1px rgba(201,169,97,.7), 0 24px 34px -18px rgba(0,0,0,.95)}
+.opt:hover{padding-left:0;background:linear-gradient(90deg,rgba(194,48,74,.16),transparent 62%)}
+.opt .ol{color:#FFF6EC}
+.opt .oh{color:rgba(244,238,226,.56)}
+.qpanel h2{color:#FFF8F0}
+.qpanel .kick{color:var(--brass)}
+@media(max-width:420px){.opt .thumb{width:66px}}
+
+
+/* 選択肢：ラベルと補足を分離し 可読性を上げる */
+.opt .ol{display:block;line-height:1.35;color:#FFF7EE}
+.opt .oh{display:block;margin-top:5px;font-size:12.5px;line-height:1.6;color:rgba(244,238,226,.60)}
+.opt .thumb{filter:saturate(.98) brightness(.98)}
+.opt{padding-block:clamp(14px,3.4vw,18px)}
+.qpanel h2{color:#FFF8F0;letter-spacing:-.01em}
+.quiz-top .q-count,.quiz .back{color:rgba(244,238,226,.72)}
+
+
+/* 日本語の不自然な折返しを抑える（文節単位で改行） */
+h1,h2,h3,p,li,.ol,.oh,.stand,.ftag,.note,.cap,.disc,.v,.k,.lead,.qpanel h2{
+  word-break:auto-phrase; line-break:strict; overflow-wrap:normal; text-wrap:pretty;
+}
+h1,h2,.qpanel h2,.fname{text-wrap:balance}
+
+
+
+
+
+/* 語の途中で折らない（auto-phrase 非対応ブラウザ向けの保険） */
+.hero .stand,.sec-head .note,.opt .ol,.opt .oh,.formula .ftag,.disc,.guide li span:last-child{
+  word-break:normal;overflow-wrap:normal;line-break:strict}
+.hero .stand{max-width:none}
+
+/* =================================================================
+   iPad 本番向け：タッチ操作の最適化
+   ================================================================= */
+html{overscroll-behavior:none}
+button,a,.opt,.link{touch-action:manipulation;-webkit-tap-highlight-color:transparent;
+  -webkit-user-select:none;user-select:none}
+.opt{min-height:76px}
+.opt:active{transform:scale(.985)}
+#startBtn:active,.btn:active,.link:active{transform:scale(.985)}
+/* ホバーの無い端末では常に見える状態にする */
+@media (hover:none){
+  .opt .ar{opacity:1;transform:none;color:var(--brass)}
+  .opt:hover{background:none;padding-left:0}
+  .opt:hover .thumb{transform:none}
+  .link::after{transform:scaleX(1)}
+}
+/* iPad（縦・横とも） */
+@media (min-width:768px) and (max-width:1200px){
+  .wrap{padding-inline:clamp(34px,6vw,68px)}
+  .qpanel{max-width:720px}
+  .opt{min-height:96px}
+  .opt .thumb{width:112px}
+  .opt .ol{font-size:20px}
+  .opt .oh{font-size:13.5px}
+  #startBtn{min-height:68px}
+  .q-back,.result .top .x{min-height:52px;min-width:52px}
+  .hero h1{font-size:clamp(58px,8.6vw,98px)}
+}
+
+/* =================================================================
+   モーション：選択の手応えと 結果の立ち上がり
+   ================================================================= */
+@media (prefers-reduced-motion:no-preference){
+  /* 選択した瞬間 金の光が走る */
+  .opt{position:relative;overflow:hidden}
+  .opt::after{content:"";position:absolute;inset:0;pointer-events:none;z-index:3;
+    background:linear-gradient(100deg,transparent 20%,rgba(201,169,97,.26),transparent 80%);
+    transform:translateX(-130%)}
+  .opt.chosen::after{animation:optSweep .72s cubic-bezier(.22,.61,.24,1) forwards}
+  @keyframes optSweep{to{transform:translateX(130%)}}
+
+  /* 質問の入替：奥から手前へ */
+  .qpanel.enter{opacity:0;transform:translateY(24px) scale(.985);filter:blur(7px)}
+  .qpanel.enter.settled{opacity:1;transform:none;filter:blur(0);
+    transition:opacity .5s var(--ease),transform .62s var(--ease),filter .5s var(--ease)}
+  .qpanel.leave{opacity:0;transform:translateY(-18px) scale(.99);filter:blur(5px);
+    transition:opacity .28s var(--ease),transform .28s var(--ease),filter .28s var(--ease)}
+
+  /* 選択肢が順に立ち上がる */
+  .qpanel.settled .opt{animation:optIn .6s var(--ease) both}
+  .qpanel.settled .opt:nth-of-type(1){animation-delay:.10s}
+  .qpanel.settled .opt:nth-of-type(2){animation-delay:.18s}
+  .qpanel.settled .opt:nth-of-type(3){animation-delay:.26s}
+  .qpanel.settled .opt:nth-of-type(4){animation-delay:.34s}
+  @keyframes optIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+
+  /* 結果：瓶が立ち上がり 素材が左右へ開く */
+  .result.show .portrait .fl{animation:riseIn .85s var(--ease) .18s both}
+  .result.show .portrait .bo.l{animation:fanL .95s var(--ease) .34s both}
+  .result.show .portrait .bo.r{animation:fanR .95s var(--ease) .42s both}
+  @keyframes riseIn{from{opacity:0;transform:translateY(30px) scale(.94)}to{opacity:1;transform:none}}
+  @keyframes fanL{from{opacity:0;transform:translateX(22px) rotate(0deg)}to{opacity:1;transform:rotate(-7deg)}}
+  @keyframes fanR{from{opacity:0;transform:translateX(-22px) rotate(0deg)}to{opacity:1;transform:rotate(8deg)}}
+
+  /* 進捗バー */
+  .q-bar{transition:width .75s cubic-bezier(.22,.61,.24,1)}
+
+  /* スクロール出現にブラーを足す */
+  .reveal{filter:blur(9px)}
+  .reveal.in{filter:blur(0);transition:opacity .9s var(--ease),transform .9s var(--ease),filter .9s var(--ease)}
+
+  /* ヒーローの瓶がゆっくり呼吸する */
+  .hero .flacon-col{animation:breathe 9s ease-in-out infinite}
+  @keyframes breathe{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+}
+
+
+/* 透かしの四角が出るため撤去 */
+.result .formula::after{display:none}
 </style>
 
-<!-- ===================== HERO ===================== -->
-<header class="hero" id="top">
-  <div class="hero-aura" aria-hidden="true"></div>
-  <div class="hero-flacon" id="heroFlacon" aria-hidden="true"></div>
-  <div class="hero-veil" aria-hidden="true"></div>
-  <canvas class="hero-canvas" id="heroCanvas" aria-hidden="true"></canvas>
-
-  <div class="topbar">
-    <div class="brand"><span class="mark">Fragrance <b>Spot</b></span></div>
-    <span class="festival">かわせみ祭 2026</span>
+<!-- ===================== ヘッダー ===================== -->
+<header class="masthead">
+  <div class="wrap">
+    <div class="wordmark">Fragrance<span>·</span>Spot</div>
+    <div class="loc">高崎モントレー 3F・4F</div>
   </div>
-
-  <div class="hero-body">
-    <div class="hero-eyebrow reveal"><span class="rule"></span><span class="eyebrow">高崎モントレー 3F・4F</span></div>
-    <h1 class="reveal d1">あなたの香りを、<br><span class="accent">60秒</span>で。</h1>
-    <p class="lead reveal d2">5つの問いに答えるだけ。<b>8つ</b>のタイプから、いま似合う<b>5</b>本の中の一本へご案内します。香りは試香紙で、そっと。</p>
-    <div class="hero-actions reveal d3">
-      <button class="btn" id="startBtn">診断を始める <span class="arw">→</span></button>
-      <span class="meta">所要 約60秒 ／ 登録不要</span>
-    </div>
-  </div>
-  <div class="scroll-cue" aria-hidden="true"><span class="dot"></span>Scroll</div>
 </header>
 
-<!-- ===================== SCROLL 3D STAGE ===================== -->
-<section class="stage" id="stage" aria-label="Fragrance Spot 香り体験イントロ">
-  <div class="stage-inner">
-    <div class="stage-glow" id="stageGlow" aria-hidden="true"></div>
-    <canvas class="stage-canvas" id="stageCanvas" aria-hidden="true"></canvas>
-    <div class="flacon-wrap" id="stageFlacon" aria-hidden="true"></div>
-    <div class="beats" aria-hidden="true">
-      <div class="beat" data-beat="0"><div class="num">Step 01</div><div class="txt">問いは、たった5つ。</div></div>
-      <div class="beat" data-beat="1"><div class="num">Step 02</div><div class="txt">香りのタイプは、8通り。</div></div>
-      <div class="beat" data-beat="2"><div class="num">Step 03</div><div class="txt">あなたの一本へ。</div></div>
+<!-- ===================== HERO ===================== -->
+<section class="hero">
+  <div class="wrap">
+    <div class="lead-col">
+      <div class="eyebrow reveal"><span class="rule"></span><span class="label"><span class="n">N°01–04</span> ・ Scent Diagnosis</span></div>
+      <h1 class="reveal d1">香りを <br><em>読み解く</em></h1>
+      <div class="sub-en reveal d1">Find the scent written for you.</div>
+      <p class="stand reveal d2">4つの問いに答えると <b>8つ</b>の型から<br>いまのあなたに似合う一本を処方します<br>所要 約60秒 香りは小瓶のコットンで</p>
+      <div class="hero-cta reveal d2">
+        <button class="link q" id="startBtn">診断を始める <span class="ar">→</span></button>
+        <span class="meta">約60秒 / 登録不要</span>
+      </div>
     </div>
-    <div class="stage-cta" id="stageCta"><button class="btn" data-start>診断を始める <span class="arw">→</span></button></div>
+    <div class="flacon-col reveal d3" id="heroFlacon" aria-hidden="true"></div>
   </div>
 </section>
 
+<div class="indexbar reveal">
+  <div class="wrap">
+    <div class="cell"><div class="k">Questions</div><div class="v">04<small> 問</small></div></div>
+    <div class="cell"><div class="k">Types</div><div class="v">08<small> 型</small></div></div>
+    <div class="cell"><div class="k">Fragrances</div><div class="v">05<small> 本</small></div></div>
+  </div>
+</div>
+
 <!-- ===================== 使い方 ===================== -->
-<section class="light" id="howto">
-  <div class="section">
-    <div class="sec-head reveal">
-      <span class="eyebrow ink">How to enjoy</span>
-      <h2>香りとの、3つの近づき方。</h2>
-      <p>気になった香りは、肌に直接つけず「試香紙」で。ゆっくり時間をかけて、あなたに残る一本を見つけてください。</p>
+<section class="section" id="howto">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="idx">01 / Method</div>
+      <div><h2 class="reveal">香りへの 三つの手順</h2>
+      <p class="note reveal d1">気になった香りは肌につけず 小瓶のコットンで<br>時間とともに変わる表情を確かめてください</p></div>
     </div>
     <div class="steps" id="stepsWrap"></div>
     <div class="spec reveal">
-      <div class="col"><span class="lab">価格</span><span class="val prices" id="specPrice"></span></div>
-      <div class="divider"></div>
-      <div class="col"><span class="lab">お支払い</span><span class="val" id="specPay"></span></div>
-      <div class="divider"></div>
-      <div class="col"><span class="lab">試し方</span><span class="val">試香紙で香りをチェック</span></div>
+      <div class="col"><div class="k">Price</div><div class="v" id="specPrice"></div></div>
+      <div class="col"><div class="k">Payment</div><div class="v" id="specPay" style="font-size:17px"></div></div>
+      <div class="col"><div class="k">Method</div><div class="v" style="font-size:17px">香り付きコットンでチェック</div></div>
     </div>
   </div>
 </section>
 
-<!-- ===================== かわせみ祭案内 ===================== -->
-<section class="fest" id="festival">
-  <div class="section">
-    <div class="fbody reveal">
-      <span class="eyebrow">Kawasemi Festival</span>
-      <h2>かわせみ祭で、<br>香りを試す。</h2>
-      <p>Fragrance Spot は、高崎モントレーに登場する香水自動販売機の体験企画です。憧れの香りを少しずつ、気軽に試せます。</p>
-      <ul>
-        <li>5つの問いで、いまの気分に似合う香りを診断できます。</li>
-        <li>香りは肌に直接つけず、試香紙でお楽しみください。</li>
-        <li>体験後は、ぜひアンケートにご協力ください。</li>
+<!-- ===================== 案内 ===================== -->
+<section class="section guide" id="festival" style="border-top:1px solid var(--line)">
+  <div class="wrap">
+    <div>
+      <div class="sec-head" style="grid-template-columns:1fr">
+        <div class="idx">02 / Kawasemi Festival</div>
+        <div><h2 class="reveal">かわせみ祭で 香りを試す</h2>
+        <p class="note reveal d1" style="grid-column:1">Fragrance Spot は高崎モントレーに登場する<br>香水自動販売機の体験企画です<br>憧れの香りを少しずつ 気軽に</p></div>
+      </div>
+      <ul class="reveal d1">
+        <li><span class="m">01</span><span>4つの問いで いまの気分に似合う香りを処方します</span></li>
+        <li><span class="m">02</span><span>香りは肌につけず 小瓶のコットンでお確かめください</span></li>
       </ul>
-      <div style="margin-top:28px"><a class="btn ghost sm" id="surveyBtn" href="#" target="_blank" rel="noopener">アンケートに答える <span class="arw">→</span></a></div>
     </div>
-    <aside class="fcard reveal d1">
-      <span class="eyebrow">Location</span>
-      <div class="loc-floor" id="locFloor"></div>
-      <p style="color:rgba(242,233,218,.82);font-size:14px;margin:18px 0 0" id="locPlace"></p>
-      <div class="qr-wrap"><div class="qr-box" id="qrBox"></div><span class="qr-cap">スマートフォンで読み取って、<br>会場・アンケートへ。</span></div>
+    <aside class="locbox reveal d2">
+      <div class="label">Location</div>
+      <div style="font-family:var(--serif);font-size:22px;margin-top:8px" id="locPlace"></div>
+      <div class="floors" id="locFloor"></div>
     </aside>
   </div>
 </section>
 
 <footer class="foot">
-  <div class="section">
-    <div class="fbrand">Fragrance <b>Spot</b></div>
-    <p class="disc">本サイトは、香り選びを楽しむための簡易的な診断です。医学的・体質的な診断ではありません。香りの感じ方には個人差があります。香りは肌に直接噴霧せず、試香紙でお試しください。表示の香り・価格・設置場所・決済方法・アンケートは変更になる場合があります。<br>© Fragrance Spot ／ かわせみ祭 ・ 高崎モントレー 3F・4F</p>
+  <div class="wrap">
+    <div class="fm">Fragrance Spot</div>
+    <p class="disc">香り選びを楽しむための簡易的な診断です 医学的な診断ではありません<br>感じ方には個人差があります<br>香りは肌に直接つけず 小瓶の香り付きコットンでお確かめください<br>香り 価格 設置場所 決済方法は変更になる場合があります<br>© Fragrance Spot ／ かわせみ祭・高崎モントレー 3F・4F</p>
   </div>
 </footer>
 
-<!-- ===================== 診断オーバーレイ ===================== -->
+<!-- ===================== 診断 ===================== -->
 <div class="quiz" id="quiz" role="dialog" aria-modal="true" aria-label="香り診断">
-  <canvas class="quiz-canvas" id="quizCanvas" aria-hidden="true"></canvas>
-  <div class="quiz-top">
-    <button class="q-back" id="qBack" aria-label="ひとつ前に戻る">‹</button>
-    <div class="q-progress">
-      <div class="q-count"><span>Fragrance Diagnosis</span><span>問 <b id="qNum">01</b> / 05</span></div>
-      <div class="q-track"><div class="q-bar" id="qBar"></div></div>
-    </div>
-  </div>
+  <div class="quiz-top"><div class="wrap">
+    <button class="q-back" id="qBack" aria-label="戻る"><span>←</span> Back</button>
+    <div class="q-prog"><span class="c">N°<b id="qNum">01</b> / 04</span><span class="q-track"><span class="q-bar" id="qBar"></span></span></div>
+  </div></div>
   <div class="quiz-stage"><div class="qpanel" id="qPanel" aria-live="polite"></div></div>
 </div>
 
 <!-- ===================== 結果 ===================== -->
 <div class="result" id="result" role="dialog" aria-modal="true" aria-label="診断結果">
   <div class="result-inner">
-    <div class="result-head">
-      <div class="rk">Your Fragrance</div>
-      <div class="rt">あなたに似合いそうな一本</div>
-      <div class="code" id="rCode">TYPE —</div>
+    <div class="top">
+      <span class="l">Your Formula</span>
+      <button class="x" id="rClose">Close ✕</button>
     </div>
-    <div class="plate">
-      <span class="badge" id="rBadge">Fragrance Spot</span>
-      <div class="scene-art" id="rArt"></div>
-    </div>
-    <div class="rname"><div class="n" id="rName">—</div><div class="sub" id="rSub">Eau de Parfum</div></div>
-    <div class="rtag" id="rTagline"></div>
-    <div class="chips" id="rChips"></div>
-    <div class="rdesc" id="rImpression"></div>
-    <div class="notes" id="rNotes"></div>
-    <div class="scene">
-      <div class="l">For you</div>
-      <div class="purpose" id="rPurpose"></div>
-      <div class="price" id="rPrice"></div>
-      <div class="place" id="rPlace"></div>
+    <div class="formula" id="formula">
+      <div class="fhead"><span class="wm">Fragrance Spot · 調香処方</span><span class="swatch"></span></div>
+      <div class="portrait" id="rPortrait" aria-hidden="true"></div>
+      <div class="kicker" id="rCode">Type —</div>
+      <div class="fname" id="rName">—</div>
+      <div class="fsub" id="rSub">Eau de Parfum</div>
+      <div class="ftag" id="rTagline"></div>
+      <div class="chips" id="rChips"></div>
+      <div class="divider"><span class="d"></span></div>
+      <div class="notes" id="rNotes"></div>
+      <div class="divider"><span class="d"></span></div>
+      <div class="fmeta">
+        <div class="m"><div class="k">Price</div><div class="v" id="rPrice"></div></div>
+        <div class="m"><div class="k">Spot</div><div class="v" id="rPlace"></div></div>
+      </div>
+      <div class="fseal" id="rSeal"></div>
     </div>
     <div class="r-actions">
-      <button class="btn solid-acc" id="rSample">試香紙で試す <span class="arw">→</span></button>
-      <div class="row"><button class="btn ink" id="rShare">結果をコピー</button><button class="btn ink" id="rAgain">もう一度診断</button></div>
+      <button class="btn" id="rSample">香り付きコットンで試す</button>
+      <div class="row"><button class="btn ghost" id="rShare">結果をコピー</button><button class="btn ghost" id="rAgain">もう一度診断</button></div>
     </div>
-    <p class="disc">香り選びを楽しむための簡易診断です。相性は目安としてお楽しみください。香りは試香紙でお試しを。</p>
+    <p class="disc">香り選びを楽しむための簡易診断です 相性は目安として<br>香りは小瓶のコットンでお確かめください</p>
   </div>
 </div>
 
@@ -434,341 +741,203 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
 <script>
 /* =================================================================
    ▼▼▼  ここだけ編集すれば内容を差し替えできます（CONFIG）  ▼▼▼
-   ・香り（5本）… name / sub / tagline / notes / tags / accent(配色・液色)
-   ・codeMap … 8つの診断コード(AAA〜BBB) → どの香りを出すか
-   ・prices / payment / location / survey / qr / howto
-   ※画像アセットは使用していません（ビジュアルはコードで生成）。
    ================================================================= */
 const CONFIG = {
-  brand:"Fragrance Spot",
-  festival:"かわせみ祭",
-  prices:[150,300,500],
-  priceNote:"サイズで選べます",
-  payment:"現金 ／ キャッシュレス（当日ご案内）",     /* ← 決済方法が決まったら差し替え */
-  location:{ place:"高崎モントレー（群馬県高崎市）", floors:[ {fl:"3F",label:"レディース フレグランス"}, {fl:"4F",label:"フレグランス スポット"} ] },
-  surveyUrl:"#",                                    /* ← アンケートURL */
-  qrImage:"",                                       /* ← QR画像パス。空なら「準備中」 */
+  brand:"Fragrance Spot", festival:"かわせみ祭",
+  prices:[150,300,500], priceNote:"サイズで選べます",
+  payment:"現金 ／ キャッシュレス",       /* ← 決済方法が決まったら差し替え */
+  location:{ place:"高崎モントレー（群馬県高崎市）", floors:[ {fl:"3F",label:"Ladies"}, {fl:"4F",label:"Spot"} ] },
   howto:[
-    { tag:"Step 01", title:"香りを診断する", body:"5つの問いに答えると、あなたの気分に似合う香りのタイプが分かります。所要は約60秒。" },
-    { tag:"Step 02", title:"試香紙で試す", body:"気になった香りは、肌ではなく試香紙へ。時間とともに変わる香りの表情を確かめて。" },
-    { tag:"Step 03", title:"自販機で購入する", body:"気に入った一本は、その場の自動販売機で。少量サイズだから、気軽に持ち帰れます。" }
+    { tag:"Diagnose", title:"香りを診断する", body:"4つの問いに答えると あなたの気分に似合う香りの型が分かります 所要は約60秒" },
+    { tag:"Test", title:"小瓶のコットンで試す", body:"気になった香りは肌ではなく 小瓶に入れた香り付きコットンで 時間とともに変わる表情を確かめて" },
+    { tag:"Purchase", title:"自販機で購入する", body:"気に入った一本はその場の自動販売機で 少量サイズだから気軽に持ち帰れます" }
   ],
-
-  /* 香り＝配布画像のラインナップ（世界観のみ参照）。名称/説明/配色を差し替え可 */
   scents:{
-    missdior:{ name:"Miss Dior", sub:"Eau de Parfum", tagline:"やわらかく華やぐ、王道フェミニン。",
+    missdior:{ name:"Miss Dior", sub:"Eau de Parfum", tagline:"やわらかく華やぐ 王道フェミニン",
       tags:["華やか","かわいい","王道モテ"],
       notes:{top:"カラブリアン ベルガモット",mid:"グラース ローズ & ピオニー",last:"ホワイトムスク"},
-      accent:{acc:"#D98BA0",deep:"#9C3350",bg:"#F7E7EC",liquid:"#F2AEC0"}, style:"bow" },
-    ysl:{ name:"YSL Libre", sub:"Eau de Parfum", tagline:"モード感のある、洗練された強さ。",
+      art:{flacon:"assets/w/cut-fl-rose.webp",bots:["assets/w/cut-bot-peony.webp","assets/w/cut-bot-crimsonrose.webp"],bg:"assets/w/raw-bg-rose.webp"},
+      accent:"#9C3350" },
+    ysl:{ name:"YSL Libre", sub:"Eau de Parfum", tagline:"モード感のある 洗練された強さ",
       tags:["モード","洗練","大人っぽい"],
       notes:{top:"マンダリン・ラベンダー",mid:"オレンジブロッサム・ジャスミン",last:"バニラ・ムスク・シダー"},
-      accent:{acc:"#CDA94F",deep:"#8A6516",bg:"#F5EDD8",liquid:"#E7C877"}, style:"angular" },
-    jomalone:{ name:"Jo Malone", sub:"English Pear & Freesia", tagline:"軽やかで清潔感のある、失敗しにくい香り。",
+      art:{flacon:"assets/w/cut-fl-gold.webp",bots:["assets/w/cut-bot-lavender.webp","assets/w/cut-bot-redberry.webp"],bg:"assets/w/raw-bg-gold.webp"},
+      accent:"#8A6516" },
+    jomalone:{ name:"Jo Malone", sub:"English Pear & Freesia", tagline:"軽やかで清潔感のある 失敗しにくい香り",
       tags:["ナチュラル","清潔感","使いやすい"],
       notes:{top:"洋梨・メロン",mid:"フリージア・ローズ",last:"パチョリ・ムスク・アンバー"},
-      accent:{acc:"#9DB36F",deep:"#5A6E33",bg:"#EDF1E2",liquid:"#E4EFCF"}, style:"tall" },
-    chloe:{ name:"Chloé", sub:"Eau de Parfum", tagline:"落ち着きの中に、やさしい華やかさ。",
+      art:{flacon:"assets/w/cut-fl-clear.webp",bots:["assets/w/cut-bot-pear.webp","assets/w/cut-bot-freesia.webp"],bg:"assets/w/raw-bg-clear.webp"},
+      accent:"#5F7A3C" },
+    chloe:{ name:"Chloé", sub:"Eau de Parfum", tagline:"落ち着きの中に やさしい華やかさ",
       tags:["上品","フェミニン","やわらかい"],
       notes:{top:"ピオニー・ライチ・フリージア",mid:"ローズ・マグノリア・すずらん",last:"シダー・アンバー・ムスク"},
-      accent:{acc:"#D79E72",deep:"#8C5A31",bg:"#F5E9DC",liquid:"#EFC9A2"}, style:"pleated" },
-    lv:{ name:"Louis Vuitton", sub:"Spell On You", tagline:"透明感の中に、色っぽさが残る香り。",
+      art:{flacon:"assets/w/cut-fl-peach.webp",bots:["assets/w/cut-bot-magnolia.webp","assets/w/cut-bot-muguet.webp"],bg:"assets/w/raw-bg-peach.webp"},
+      accent:"#B07A4A" },
+    lv:{ name:"Louis Vuitton", sub:"Spell On You", tagline:"透明感の中に 色っぽさが残る香り",
       tags:["透明感","色気","洗練"],
       notes:{top:"アイリス・ヴァイオレット",mid:"ローズ・ジャスミン・サンバック",last:"ホワイトムスク・パウダリー"},
-      accent:{acc:"#B389C4",deep:"#6C4785",bg:"#F0E7F4",liquid:"#E6B4D3"}, style:"cylinder" }
+      art:{flacon:"assets/w/cut-fl-mauve.webp",bots:["assets/w/cut-bot-iris.webp","assets/w/cut-bot-violet.webp"],bg:"assets/w/raw-bg-mauve.webp"},
+      accent:"#7E5A93" }
   },
-
-  /* 8コード(Q1Q2Q3) → 香り。5本すべてを網羅 */
   codeMap:{ AAA:"chloe", AAB:"missdior", ABA:"chloe", ABB:"missdior", BAA:"jomalone", BAB:"jomalone", BBA:"lv", BBB:"ysl" },
-
   impressions:{
-    "清潔感":{tag:"清潔感",phrase:"凛と澄んだ印象を、まわりへ。"},
-    "温かさ":{tag:"温かさ",phrase:"やわらかな体温を感じさせて。"},
-    "大人っぽさ":{tag:"大人っぽさ",phrase:"落ち着いた余裕を、さりげなく。"},
-    "ミステリアスさ":{tag:"ミステリアス",phrase:"少しの謎めきを、余韻に残して。"}
-  },
-  purposes:{
-    self:{label:"自分用に選びたい",note:"今日の一本を、試香紙でじっくり確かめて。"},
-    friends:{label:"友達と楽しみたい",note:"友達の結果と並べて、香りを比べてみて。"},
-    gift:{label:"プレゼントの参考に",note:"贈りたい人を思い浮かべながら、試して。"},
-    memory:{label:"文化祭の記念に",note:"かわせみ祭の思い出に、香りの記録を。"}
+    "清潔感":{tag:"清潔感",phrase:"凛と澄んだ印象を まわりへ"},
+    "温かさ":{tag:"温かさ",phrase:"やわらかな体温を さりげなく"},
+    "大人っぽさ":{tag:"大人っぽさ",phrase:"落ち着いた余裕を 香りに"},
+    "ミステリアスさ":{tag:"ミステリアス",phrase:"少しの謎めきを 余韻に"}
   }
 };
-
 const QUESTIONS=[
   { id:"q1",kicker:"Question 01",q:"どんな空気感に惹かれますか？",options:[
-    {v:"A",mk:"甘",label:"甘くやわらかい",hint:"ふんわり、やさしい空気"},
-    {v:"B",mk:"爽",label:"爽やかで透明感がある",hint:"軽く澄んだ、クリアな空気"} ] },
+    {v:"A",mk:"A",label:"甘くやわらかい",img:"assets/w/raw-q-sweet.webp",hint:"ふんわり やさしい空気"},
+    {v:"B",mk:"B",label:"爽やかで透明感がある",img:"assets/w/raw-q-fresh.webp",hint:"軽く澄んだ クリアな空気"} ] },
   { id:"q2",kicker:"Question 02",q:"どんな場面で使いたいですか？",options:[
-    {v:"A",mk:"日",label:"いつもの日常",hint:"毎日に寄り添う一本"},
-    {v:"B",mk:"特",label:"特別な日",hint:"ここぞ、という日に"} ] },
+    {v:"A",mk:"A",label:"いつもの日常",img:"assets/w/raw-q-daily.webp",hint:"毎日に寄り添う一本"},
+    {v:"B",mk:"B",label:"特別な日",img:"assets/w/raw-q-special.webp",hint:"ここぞ という日に"} ] },
   { id:"q3",kicker:"Question 03",q:"いつ使いたいですか？",options:[
-    {v:"A",mk:"昼",label:"朝・昼",hint:"一日のはじまりに"},
-    {v:"B",mk:"夜",label:"夕方・夜",hint:"一日の終わりに"} ] },
-  { id:"q4",kicker:"Question 04",q:"どんな印象を残したいですか？",grid:true,options:[
-    {v:"清潔感",label:"清潔感"},{v:"温かさ",label:"温かさ"},{v:"大人っぽさ",label:"大人っぽさ"},{v:"ミステリアスさ",label:"ミステリアスさ"} ] },
-  { id:"q5",kicker:"Question 05",q:"今回の目的は何ですか？",grid:true,options:[
-    {v:"self",label:"自分用に選びたい"},{v:"friends",label:"友達と楽しみたい"},{v:"gift",label:"プレゼントの参考に"},{v:"memory",label:"文化祭の記念に"} ] }
+    {v:"A",mk:"A",label:"朝・昼",img:"assets/w/raw-q-morning.webp",hint:"一日のはじまりに"},
+    {v:"B",mk:"B",label:"夕方・夜",img:"assets/w/raw-q-night.webp",hint:"一日の終わりに"} ] },
+  { id:"q4",kicker:"Question 04",q:"どんな印象を残したいですか？",options:[
+    {v:"清潔感",mk:"a",label:"清潔感",img:"assets/w/raw-q-clean.webp",hint:"澄んだ 清らかな"},{v:"温かさ",mk:"b",label:"温かさ",img:"assets/w/raw-q-warm.webp",hint:"やわらかな 体温を感じる"},
+    {v:"大人っぽさ",mk:"c",label:"大人っぽさ",img:"assets/w/raw-q-mature.webp",hint:"落ち着いた 余裕のある"},{v:"ミステリアスさ",mk:"d",label:"ミステリアスさ",img:"assets/w/raw-q-mystery.webp",hint:"少し謎めいた"} ] },
 ];
 /* ▲▲▲ 編集エリアここまで ▲▲▲ ============================================ */
 
-/* ================= 診断ロジック ================= */
+/* ---- ロジック ---- */
 function diagnose(ans){
   const code=(ans.q1||"")+(ans.q2||"")+(ans.q3||"");
   const key=CONFIG.codeMap[code];
-  return { code,key,scent:CONFIG.scents[key],
-    impression:CONFIG.impressions[ans.q4]||null, purpose:CONFIG.purposes[ans.q5]||null };
+  return { code,key,scent:CONFIG.scents[key],impression:CONFIG.impressions[ans.q4]||null };
 }
 function runDiagnosisTests(){
-  const codes=["AAA","AAB","ABA","ABB","BAA","BAB","BBA","BBB"];
-  const problems=[],reached=new Set();
-  codes.forEach(c=>{ const k=CONFIG.codeMap[c];
-    if(!k){problems.push("コード "+c+" 未マッピング");return;}
-    if(!CONFIG.scents[k]){problems.push("コード "+c+" → 未定義の香り '"+k+"'");return;}
-    reached.add(k); });
-  Object.keys(CONFIG.scents).forEach(k=>{ const s=CONFIG.scents[k];
-    if(!s.name||!s.tagline)problems.push("香り '"+k+"' に必須項目不足");
-    if(!reached.has(k))problems.push("香り '"+k+"' は未到達（意図的なら無視可）"); });
-  if(diagnose({q1:"B",q2:"B",q3:"B"}).key!=="ysl")problems.push("BBB→ysl 期待に不一致");
-  if(diagnose({q1:"A",q2:"A",q3:"A"}).key!=="chloe")problems.push("AAA→chloe 期待に不一致");
-  if(problems.length===0) console.log("%c✓ 診断テスト合格：8コードすべて有効な香りに対応","color:#2e7d32;font-weight:bold");
-  else console.warn("✗ 診断テスト問題:",problems);
+  const codes=["AAA","AAB","ABA","ABB","BAA","BAB","BBA","BBB"];const problems=[],reached=new Set();
+  codes.forEach(c=>{const k=CONFIG.codeMap[c];if(!k){problems.push("未マッピング "+c);return;}if(!CONFIG.scents[k]){problems.push(c+"→未定義 "+k);return;}reached.add(k);});
+  Object.keys(CONFIG.scents).forEach(k=>{const s=CONFIG.scents[k];if(!s.name||!s.tagline)problems.push("必須不足 "+k);if(!reached.has(k))problems.push("未到達 "+k);});
+  if(diagnose({q1:"B",q2:"B",q3:"B"}).key!=="ysl")problems.push("BBB→ysl不一致");
+  if(diagnose({q1:"A",q2:"A",q3:"A"}).key!=="chloe")problems.push("AAA→chloe不一致");
+  console[problems.length?"warn":"log"](problems.length?"✗ 診断テスト:":"%c✓ 診断テスト合格：8コード対応","color:#5F7A3C;font-weight:bold",...(problems.length?[problems]:[]));
   return problems;
 }
 
-/* ================= ユーティリティ ================= */
-const prefersReduced=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-const isMobile=window.matchMedia("(max-width: 767px)").matches;
+/* ---- SVG素材（透明・currentColor） ---- */
+const SVG_FLACON='<svg viewBox="0 0 160 240" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round" stroke-linecap="round" class="draw"><rect x="66" y="16" width="28" height="26" rx="2"/><path d="M72 42 h16 v10 h-16 z"/><path d="M54 62 C54 55 60 52 68 52 H92 C100 52 106 55 106 62 L108 214 C108 222 103 226 96 226 H64 C57 226 52 222 52 214 Z"/><path d="M52 150 H108" opacity="0.5"/><path d="M64 74 v128" opacity="0.35"/></svg>';
+const SVG_SPRIG='<svg viewBox="0 0 120 200" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M60 196 V20"/><path d="M60 150 C42 146 30 136 26 118 C44 120 56 130 60 148"/><path d="M60 150 C78 146 90 136 94 118 C76 120 64 130 60 148"/><path d="M60 116 C44 112 33 103 29 86 C46 88 57 98 60 114"/><path d="M60 116 C76 112 87 103 91 86 C74 88 63 98 60 114"/><path d="M60 84 C47 80 38 72 35 58 C49 60 58 68 60 82"/><path d="M60 84 C73 80 82 72 85 58 C71 60 62 68 60 82"/><circle cx="60" cy="18" r="4.5"/></svg>';
+
+/* ---- ユーティリティ ---- */
+const prefersReduced=matchMedia("(prefers-reduced-motion: reduce)").matches;
 document.documentElement.classList.add("js");
-const $=s=>document.querySelector(s), $$=s=>Array.from(document.querySelectorAll(s));
+const $=s=>document.querySelector(s),$$=s=>Array.from(document.querySelectorAll(s));
 const state={idx:0,answers:{}};
 const quiz=$("#quiz"),result=$("#result");
 function toast(m){const t=$("#toast");t.textContent=m;t.classList.add("show");clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove("show"),2200);}
 
-/* ================= SVG フラコン生成 =================
-   colors:{liquid,acc,deep,glass}, style:'signature|bow|angular|tall|pleated|cylinder' */
-let _uid=0;
-function flaconSVG(o){
-  const id="f"+(_uid++);
-  const liquid=o.liquid||"#8E2A3C", acc=o.acc||"#C6A15C", deep=o.deep||"#7C2334";
-  const glassTop="rgba(255,255,255,.22)", glassBot="rgba(255,255,255,.03)";
-  const style=o.style||"signature";
-  // body path（肩のあるフラコン）
-  const body="M52,116 C52,102 63,96 76,96 L124,96 C137,96 148,102 148,116 L150,286 C150,296 143,300 134,300 L66,300 C57,300 50,296 50,286 Z";
-  // cap
-  let cap="";
-  if(style==="angular"){ // YSL 風：黒＋ゴールド角キャップ
-    cap='<rect x="80" y="30" width="40" height="42" rx="3" fill="#161314"/><rect x="80" y="30" width="18" height="42" rx="3" fill="rgba(255,255,255,.12)"/><rect x="84" y="70" width="32" height="9" rx="2" fill="url(#g'+id+'cap)"/>';
-  }else if(style==="tall"){ // Jo Malone 風：シルバードーム
-    cap='<ellipse cx="100" cy="52" rx="24" ry="21" fill="url(#g'+id+'sil)"/><rect x="82" y="66" width="36" height="12" rx="3" fill="url(#g'+id+'sil)"/>';
-  }else if(style==="cylinder"){ // LV 風：黒キャップ
-    cap='<rect x="80" y="34" width="40" height="42" rx="16" fill="#1b1618"/><rect x="80" y="34" width="16" height="42" rx="16" fill="rgba(255,255,255,.10)"/>';
-  }else{ // signature / bow / pleated：ゴールドキャップ
-    cap='<rect x="80" y="34" width="40" height="40" rx="6" fill="url(#g'+id+'cap)"/><rect x="80" y="34" width="14" height="40" rx="6" fill="rgba(255,255,255,.28)"/>';
-  }
-  // 装飾（bow=リボン, pleated=縦プリーツ）
-  let deco="";
-  if(style==="bow"){
-    deco='<g opacity=".9"><path d="M100,78 L78,70 Q72,80 78,90 Z" fill="url(#g'+id+'cap)"/><path d="M100,78 L122,70 Q128,80 122,90 Z" fill="url(#g'+id+'cap)"/><circle cx="100" cy="80" r="4" fill="'+deep+'"/></g>';
-  }else if(style==="pleated"){
-    deco='<g stroke="rgba(255,255,255,.16)" stroke-width="1.4">'+
-      [66,82,100,118,134].map(x=>'<line x1="'+x+'" y1="150" x2="'+x+'" y2="296"/>').join("")+'</g>';
-  }
-  return (
-  '<svg viewBox="0 0 200 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true">'+
-    '<defs>'+
-      '<linearGradient id="g'+id+'glass" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="'+glassTop+'"/><stop offset=".5" stop-color="'+glassBot+'"/><stop offset="1" stop-color="rgba(0,0,0,.18)"/></linearGradient>'+
-      '<linearGradient id="g'+id+'liq" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="'+liquid+'" stop-opacity=".95"/><stop offset="1" stop-color="'+deep+'"/></linearGradient>'+
-      '<linearGradient id="g'+id+'cap" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7C5C1F"/><stop offset=".45" stop-color="#EBD196"/><stop offset=".62" stop-color="#B78F3A"/><stop offset="1" stop-color="#6A4E1B"/></linearGradient>'+
-      '<linearGradient id="g'+id+'sil" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7c7c82"/><stop offset=".45" stop-color="#eceef2"/><stop offset="1" stop-color="#9a9aa0"/></linearGradient>'+
-      '<clipPath id="c'+id+'"><path d="'+body+'"/></clipPath>'+
-    '</defs>'+
-    '<ellipse cx="100" cy="310" rx="56" ry="8" fill="rgba(0,0,0,.28)"/>'+
-    cap+
-    '<rect x="86" y="72" width="28" height="26" fill="url(#g'+id+'glass)" stroke="'+acc+'" stroke-opacity=".4"/>'+
-    '<path d="'+body+'" fill="url(#g'+id+'glass)" stroke="'+acc+'" stroke-opacity=".45" stroke-width="1.2"/>'+
-    '<g clip-path="url(#c'+id+')">'+
-      '<rect x="46" y="168" width="112" height="140" fill="url(#g'+id+'liq)"/>'+
-      '<rect x="46" y="168" width="112" height="3" fill="rgba(255,255,255,.4)"/>'+
-      deco+
-      '<rect x="66" y="120" width="12" height="150" rx="6" fill="rgba(255,255,255,.30)"/>'+
-      '<rect x="86" y="120" width="5" height="150" rx="3" fill="rgba(255,255,255,.18)"/>'+
-      '<ellipse cx="120" cy="130" rx="20" ry="30" fill="rgba(255,255,255,.10)"/>'+
-    '</g>'+
-    '<rect x="70" y="196" width="60" height="40" rx="4" fill="rgba(255,255,255,.82)"/>'+
-    '<text x="100" y="214" text-anchor="middle" font-family="Cormorant Garamond,serif" font-size="13" fill="'+deep+'" font-style="italic">Fragrance</text>'+
-    '<text x="100" y="228" text-anchor="middle" font-family="Outfit,sans-serif" font-size="7" letter-spacing="3" fill="'+acc+'">SPOT</text>'+
-  '</svg>');
-}
-
-/* ================= 静的セクション ================= */
-function fmtPrices(){return CONFIG.prices.map(p=>"<b>"+p+"円</b>").join(" ・ ");}
-function stepFig(i){
-  // 使い方の図（生成SVG）：01診断=しずく問い / 02試香紙 / 03自販機
-  const gold="#7C2334",g2="#C6A15C";
-  if(i===0)return '<svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="40" fill="none" stroke="'+g2+'" stroke-width="1.5" opacity=".5"/><path d="M50 26 C60 42 66 50 66 60 a16 16 0 0 1-32 0 c0-10 6-18 16-34 Z" fill="none" stroke="'+gold+'" stroke-width="2"/><circle cx="50" cy="60" r="4" fill="'+g2+'"/></svg>';
-  if(i===1)return '<svg viewBox="0 0 100 100" aria-hidden="true"><rect x="38" y="16" width="16" height="64" rx="3" fill="none" stroke="'+gold+'" stroke-width="2"/><rect x="38" y="16" width="16" height="20" rx="3" fill="'+g2+'" opacity=".5"/><path d="M58 40 q14 6 14 22" fill="none" stroke="'+g2+'" stroke-width="1.5" stroke-dasharray="2 4"/></svg>';
-  return '<svg viewBox="0 0 100 100" aria-hidden="true"><rect x="26" y="18" width="48" height="64" rx="6" fill="none" stroke="'+gold+'" stroke-width="2"/><line x1="50" y1="18" x2="50" y2="82" stroke="'+g2+'" stroke-width="1" opacity=".5"/><rect x="33" y="26" width="12" height="16" rx="2" fill="'+g2+'" opacity=".45"/><rect x="55" y="26" width="12" height="16" rx="2" fill="'+g2+'" opacity=".45"/><rect x="33" y="60" width="34" height="8" rx="2" fill="none" stroke="'+g2+'" stroke-width="1.5"/></svg>';
-}
+/* ---- 静的描画 ---- */
 function renderStatic(){
+  $("#heroFlacon").innerHTML=SVG_FLACON;
   $("#stepsWrap").innerHTML=CONFIG.howto.map((s,i)=>(
-    '<div class="step reveal"><div class="fig">'+stepFig(i)+'</div>'+
-    '<div class="st-body"><span class="st-tag">'+s.tag+'</span><h3>'+s.title+'</h3><p>'+s.body+'</p></div></div>')).join("");
-  $("#specPrice").innerHTML=fmtPrices();
+    '<div class="step reveal"><div class="no">0'+(i+1)+'</div>'+
+    '<div class="body"><h3>'+s.title+'</h3><p>'+s.body+'</p></div>'+
+    '<div class="tag">'+s.tag+'</div></div>')).join("");
+  $("#specPrice").innerHTML=CONFIG.prices.map(p=>"<b>¥"+p+"</b>").join(" / ");
   $("#specPay").textContent=CONFIG.payment;
-  $("#locFloor").innerHTML=CONFIG.location.floors.map(f=>'<div class="fl"><b>'+f.fl+'</b><span>'+f.label+'</span></div>').join("");
   $("#locPlace").textContent=CONFIG.location.place;
-  const survey=$("#surveyBtn"); survey.href=CONFIG.surveyUrl||"#";
-  if(!CONFIG.surveyUrl||CONFIG.surveyUrl==="#") survey.addEventListener("click",e=>{e.preventDefault();toast("アンケートURLは準備中です");});
-  const qr=$("#qrBox");
-  if(CONFIG.qrImage){ const im=new Image();im.alt="Fragrance Spot QRコード";im.src=CONFIG.qrImage;
-    im.onerror=()=>{qr.innerHTML='<div class="qr-ph">QRコード<br>準備中</div>';}; qr.innerHTML="";qr.appendChild(im);
-  }else qr.innerHTML='<div class="qr-ph">QRコード<br>準備中</div>';
+  $("#locFloor").innerHTML=CONFIG.location.floors.map(f=>'<div class="fl"><b>'+f.fl+'</b><span>'+f.label+'</span></div>').join("");
 }
 
-/* ================= パーティクル（金の粉） ================= */
-function makeParticles(canvas,opts){
-  if(!canvas||prefersReduced)return null;
-  const ctx=canvas.getContext("2d");let w,h,dpr,parts=[],raf=null,running=false;
-  const count=Math.round(isMobile?opts.mobile:opts.desktop);
-  function resize(){dpr=Math.min(window.devicePixelRatio||1,2);w=canvas.clientWidth;h=canvas.clientHeight;canvas.width=w*dpr;canvas.height=h*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);}
-  function seed(){parts=[];for(let i=0;i<count;i++)parts.push({x:Math.random()*w,y:Math.random()*h,r:Math.random()*1.8+.4,s:Math.random()*.28+.06,a:Math.random()*.5+.15,d:(Math.random()-.5)*.25});}
-  function frame(){ctx.clearRect(0,0,w,h);for(const p of parts){p.y-=p.s;p.x+=p.d;if(p.y<-6){p.y=h+6;p.x=Math.random()*w;}ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,6.283);ctx.fillStyle="rgba("+opts.rgb+","+p.a+")";ctx.fill();}raf=requestAnimationFrame(frame);}
-  function start(){if(running)return;running=true;resize();seed();frame();}
-  function stop(){running=false;if(raf)cancelAnimationFrame(raf);ctx&&ctx.clearRect(0,0,w,h);}
-  window.addEventListener("resize",()=>{if(running){resize();seed();}});
-  return{start,stop};
-}
-const heroP=makeParticles($("#heroCanvas"),{desktop:70,mobile:34,rgb:"233,207,146"});
-const stageP=makeParticles($("#stageCanvas"),{desktop:60,mobile:28,rgb:"233,207,146"});
-const quizP=makeParticles($("#quizCanvas"),{desktop:40,mobile:20,rgb:"233,207,146"});
-
-/* ================= スクロール駆動ステージ ================= */
-(function scrollStage(){
-  const stage=$("#stage"),flacon=$("#stageFlacon"),glow=$("#stageGlow"),cta=$("#stageCta"),beats=$$(".beat");
-  let ticking=false,active=false;
-  function update(){
-    ticking=false;
-    const r=stage.getBoundingClientRect(),vh=window.innerHeight,total=r.height-vh;
-    let p=total>0?(-r.top)/total:0;p=Math.max(0,Math.min(1,p));
-    const inView=r.top<vh&&r.bottom>0;
-    if(stageP){if(inView&&!active){stageP.start();active=true;}else if(!inView&&active){stageP.stop();active=false;}}
-    if(prefersReduced){beats.forEach((b,i)=>b.classList.toggle("on",i===2));cta.classList.add("on");return;}
-    flacon.style.setProperty("--rot",(p*320-16).toFixed(1)+"deg");
-    flacon.style.setProperty("--fy",((0.5-p)*36).toFixed(1)+"px");
-    flacon.style.setProperty("--fs",(0.92+p*0.22).toFixed(3));
-    glow.style.setProperty("--glowx",((p-0.5)*120).toFixed(0)+"px");
-    glow.style.setProperty("--glowy",((0.5-p)*70).toFixed(0)+"px");
-    const bi=p<0.34?0:p<0.68?1:2;beats.forEach((b,i)=>b.classList.toggle("on",i===bi));
-    cta.classList.toggle("on",p>0.8);
-  }
-  window.addEventListener("scroll",()=>{if(!ticking){ticking=true;requestAnimationFrame(update);}},{passive:true});
-  window.addEventListener("resize",update);update();
-})();
-
-/* ================= reveal ================= */
-(function reveals(){
-  if(prefersReduced){$$(".reveal").forEach(e=>e.classList.add("in"));return;}
-  const io=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add("in");io.unobserve(e.target);}});},{threshold:.16,rootMargin:"0px 0px -8% 0px"});
+/* ---- reveal ---- */
+(function(){ if(prefersReduced){$$(".reveal").forEach(e=>e.classList.add("in"));return;}
+  const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add("in");io.unobserve(e.target);}}),{threshold:.14,rootMargin:"0px 0px -6% 0px"});
   $$(".reveal").forEach(e=>io.observe(e));
 })();
 
-/* ================= 診断フロー ================= */
+/* ---- 診断フロー ---- */
 let lastFocus=null;
-function openQuiz(){state.idx=0;state.answers={};lastFocus=document.activeElement;quiz.classList.add("open");document.body.style.overflow="hidden";quizP&&quizP.start();renderQuestion(true);}
-function closeQuiz(){quiz.classList.remove("open");document.body.style.overflow="";quizP&&quizP.stop();lastFocus&&lastFocus.focus&&lastFocus.focus();}
+function openQuiz(){state.idx=0;state.answers={};lastFocus=document.activeElement;quiz.classList.add("open");document.body.style.overflow="hidden";renderQuestion(true);}
+function closeQuiz(){quiz.classList.remove("open");document.body.style.overflow="";lastFocus&&lastFocus.focus&&lastFocus.focus();}
 function updateProgress(){$("#qNum").textContent=String(state.idx+1).padStart(2,"0");$("#qBar").style.width=((state.idx+1)/QUESTIONS.length*100)+"%";}
 function renderQuestion(first){
   const q=QUESTIONS[state.idx];updateProgress();const panel=$("#qPanel");
   const build=()=>{
     panel.className="qpanel enter";
-    panel.innerHTML='<div class="kicker">'+q.kicker+'</div><h2>'+q.q+'</h2><div class="opts'+(q.grid?' grid':'')+'" role="group" aria-label="'+q.q+'"></div>';
+    panel.innerHTML='<div class="kick">'+q.kicker+'</div><h2>'+q.q+'</h2><div class="opts" role="group" aria-label="'+q.q+'"></div>';
     const wrap=panel.querySelector(".opts");
     q.options.forEach(opt=>{
-      const b=document.createElement("button");b.className="opt"+(q.grid?" grid-opt":"");b.setAttribute("aria-label",opt.label);
-      b.innerHTML=q.grid?'<span class="ol">'+opt.label+'</span>':'<span class="mk">'+(opt.mk||"")+'</span><span><span class="ol">'+opt.label+'</span>'+(opt.hint?'<br><span class="oh">'+opt.hint+'</span>':'')+'</span>';
+      const b=document.createElement("button");b.className="opt";b.setAttribute("aria-label",opt.label);
+      b.innerHTML=(opt.img?'<span class="thumb" style="background-image:url(\''+opt.img+'\')"></span>':'<span class="mk">'+(opt.mk||"")+'</span>')
+        +'<span><span class="ol">'+opt.label+'</span>'+(opt.hint?'<span class="oh">'+opt.hint+'</span>':'')+'</span><span class="ar">→</span>';
       if(state.answers[q.id]===opt.v)b.classList.add("chosen");
       b.addEventListener("click",()=>choose(q,opt,b));wrap.appendChild(b);
     });
     requestAnimationFrame(()=>panel.classList.add("settled"));
     const f=panel.querySelector(".opt");f&&f.focus({preventScroll:true});
   };
-  if(first)build();else{panel.classList.add("leave");setTimeout(build,prefersReduced?0:220);}
+  if(first)build();else{panel.classList.add("leave");setTimeout(build,prefersReduced?0:210);}
 }
 function choose(q,opt,btn){
-  state.answers[q.id]=opt.v;
-  $$("#qPanel .opt").forEach(o=>o.classList.remove("chosen"));btn.classList.add("chosen");
-  setTimeout(()=>{ if(state.idx<QUESTIONS.length-1){state.idx++;renderQuestion(false);}else showResult(); },prefersReduced?0:230);
+  state.answers[q.id]=opt.v;$$("#qPanel .opt").forEach(o=>o.classList.remove("chosen"));btn.classList.add("chosen");
+  setTimeout(()=>{if(state.idx<QUESTIONS.length-1){state.idx++;renderQuestion(false);}else showResult();},prefersReduced?0:230);
 }
-function goBack(){ if(state.idx===0){closeQuiz();return;} state.idx--;renderQuestion(false); }
+function goBack(){if(state.idx===0){closeQuiz();return;}state.idx--;renderQuestion(false);}
 
-/* ================= 結果 ================= */
-function applyAccent(a){result.style.setProperty("--acc",a.acc);result.style.setProperty("--acc-deep",a.deep);result.style.setProperty("--acc-bg",a.bg);result.style.setProperty("--acc-liquid",a.liquid);}
-function buildArt(scent){
-  const a=scent.accent;
-  const svg=flaconSVG({liquid:a.liquid,acc:a.acc,deep:a.deep,style:scent.style});
-  let petals="";
-  if(!prefersReduced){
-    for(let i=0;i<7;i++){const x=8+Math.random()*84,s=6+Math.random()*10,dur=(7+Math.random()*7).toFixed(1),dl=(-Math.random()*8).toFixed(1);
-      petals+='<span class="petal" style="left:'+x.toFixed(1)+'%;width:'+s.toFixed(0)+'px;height:'+(s*1.3).toFixed(0)+'px;animation-duration:'+dur+'s;animation-delay:'+dl+'s"></span>';}
-  }
-  $("#rArt").innerHTML=
-    '<div class="art-svg" style="display:flex;align-items:center;justify-content:center;padding:8% 0 14%">'+svg+'</div>'+
-    petals+
-    '<div class="art-label"><div class="fs">'+scent.name+'</div><div class="sm">'+(scent.sub||"Eau de Parfum")+'</div></div>';
-}
+/* ---- 結果（処方ラベル） ---- */
 function showResult(){
   const res=diagnose(state.answers),s=res.scent;
-  if(!s){toast("診断に失敗しました。もう一度お試しください");closeQuiz();return;}
-  applyAccent(s.accent);
-  $("#rCode").textContent="TYPE "+res.code;
-  $("#rBadge").textContent=CONFIG.brand;
-  $("#rName").textContent=s.name;$("#rSub").textContent=s.sub||"Eau de Parfum";
+  if(!s){toast("診断に失敗しました");closeQuiz();return;}
+  const acc=s.accent||"#7E2B2B";
+  $("#formula").style.setProperty("--acc",acc);
+  $("#rCode").textContent="Type "+res.code + (res.impression?" · "+res.impression.tag:"");
+  $("#rName").textContent=s.name;
+  $("#rSub").textContent=s.sub||"Eau de Parfum";
   $("#rTagline").textContent=s.tagline||"";
-  buildArt(s);
   const tags=(s.tags||[]).slice();if(res.impression)tags.push(res.impression.tag);
   $("#rChips").innerHTML=tags.map(t=>"<span>"+t+"</span>").join("");
-  $("#rImpression").textContent=res.impression?res.impression.phrase:"";
   const n=s.notes||{};
-  $("#rNotes").innerHTML='<div class="nt"><div class="l">Top</div><div class="v">'+(n.top||"—")+'</div></div><div class="nt"><div class="l">Middle</div><div class="v">'+(n.mid||"—")+'</div></div><div class="nt"><div class="l">Last</div><div class="v">'+(n.last||"—")+'</div></div>';
-  $("#rPurpose").textContent=res.purpose?res.purpose.note:"試香紙で、じっくり試してみて。";
-  $("#rPrice").innerHTML=CONFIG.prices.map(p=>"<b>"+p+"円</b>").join(" / ")+'　<span style="font-size:12px;color:var(--ink-soft)">'+CONFIG.priceNote+'</span>';
-  $("#rPlace").textContent=CONFIG.location.place+" ／ "+CONFIG.location.floors.map(f=>f.fl).join("・");
+  $("#rNotes").innerHTML=
+    '<div class="row"><span class="k">Top</span><span class="v">'+(n.top||"—")+'</span></div>'+
+    '<div class="row"><span class="k">Heart</span><span class="v">'+(n.mid||"—")+'</span></div>'+
+    '<div class="row"><span class="k">Base</span><span class="v">'+(n.last||"—")+'</span></div>';
+  $("#rPrice").innerHTML=CONFIG.prices.map(p=>"<b>¥"+p+"</b>").join(" / ");
+  $("#rPlace").textContent=CONFIG.location.floors.map(f=>f.fl).join("・");
+  const art=s.art||{};
+  $("#rPortrait").innerHTML =
+    (art.bots&&art.bots[0]?'<img class="bo l" src="'+art.bots[0]+'" alt="">':'')+
+    (art.flacon?'<img class="fl" src="'+art.flacon+'" alt="'+s.name+' のイメージ">':'')+
+    (art.bots&&art.bots[1]?'<img class="bo r" src="'+art.bots[1]+'" alt="">':'');
+  $("#formula").style.backgroundImage = art.bg
+    ? 'linear-gradient(rgba(26,13,18,.52),rgba(26,13,18,.74)), url("'+art.bg+'")' : '';
+  $("#rSeal").innerHTML=SVG_SPRIG;
+  result._current=res;
   closeQuiz();
-  result.classList.add("open");document.body.style.overflow="hidden";result.scrollTop=0;result._current=res;
-  requestAnimationFrame(()=>result.classList.add("show-plate"));
+  result.classList.add("open");document.body.style.overflow="hidden";result.scrollTop=0;
+  requestAnimationFrame(()=>result.classList.add("show"));
   $("#rShare").focus({preventScroll:true});
 }
-function closeResult(){result.classList.remove("open","show-plate");document.body.style.overflow="";}
+function closeResult(){result.classList.remove("open","show");document.body.style.overflow="";}
 function shareText(){
-  const res=result._current;if(!res)return "";const s=res.scent;
-  return ["私の香りタイプは【"+s.name+"】でした（"+(s.sub||"")+"）",
-    "タイプ "+res.code+(res.impression?" ／ "+res.impression.tag:""),s.tagline,
-    "価格："+CONFIG.prices.map(p=>p+"円").join("/"),
-    "場所："+CONFIG.location.place+" "+CONFIG.location.floors.map(f=>f.fl).join("・"),
+  const res=result._current;if(!res)return"";const s=res.scent;
+  return ["FRAGRANCE SPOT ｜ 調香処方",
+    "私の香りは【"+s.name+"】（"+(s.sub||"")+"）",
+    "Type "+res.code+(res.impression?" · "+res.impression.tag:""),
+    s.tagline,
+    "Price ¥"+CONFIG.prices.join(" / ¥"),
+    "Spot 高崎モントレー "+CONFIG.location.floors.map(f=>f.fl).join("・"),
     "#FragranceSpot #かわせみ祭 #香り診断"].join("\n");
 }
-async function shareResult(){const text=shareText();
-  if(navigator.share){try{await navigator.share({title:"Fragrance Spot 香り診断",text});return;}catch(e){if(e&&e.name==="AbortError")return;}}
-  copyText(text);}
-function copyText(text){const done=()=>toast("結果をコピーしました");
-  if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(text).then(done).catch(()=>legacyCopy(text,done));else legacyCopy(text,done);}
-function legacyCopy(text,done){const ta=document.createElement("textarea");ta.value=text;ta.style.position="fixed";ta.style.opacity="0";document.body.appendChild(ta);ta.select();try{document.execCommand("copy");done();}catch(e){toast("コピーできませんでした");}document.body.removeChild(ta);}
+async function shareResult(){const t=shareText();if(navigator.share){try{await navigator.share({title:"Fragrance Spot 香り診断",text:t});return;}catch(e){if(e&&e.name==="AbortError")return;}}copyText(t);}
+function copyText(t){const done=()=>toast("結果をコピーしました");if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(t).then(done).catch(()=>legacy(t,done));else legacy(t,done);}
+function legacy(t,done){const ta=document.createElement("textarea");ta.value=t;ta.style.position="fixed";ta.style.opacity="0";document.body.appendChild(ta);ta.select();try{document.execCommand("copy");done();}catch(e){toast("コピーできませんでした");}document.body.removeChild(ta);}
 
-/* ================= 配線 ================= */
+/* ---- 配線 ---- */
 $("#startBtn").addEventListener("click",openQuiz);
-$$("[data-start]").forEach(b=>b.addEventListener("click",openQuiz));
 $("#qBack").addEventListener("click",goBack);
+$("#rClose").addEventListener("click",closeResult);
 $("#rAgain").addEventListener("click",()=>{closeResult();openQuiz();});
 $("#rShare").textContent=navigator.share?"結果を共有":"結果をコピー";
 $("#rShare").addEventListener("click",()=>{navigator.share?shareResult():copyText(shareText());});
 $("#rSample").addEventListener("click",()=>{closeResult();document.getElementById("howto").scrollIntoView({behavior:prefersReduced?"auto":"smooth"});});
 document.addEventListener("keydown",e=>{if(e.key==="Escape"){if(result.classList.contains("open"))closeResult();else if(quiz.classList.contains("open"))closeQuiz();}});
-(function heroObserve(){if(!heroP)return;const io=new IntersectionObserver(es=>{es.forEach(e=>e.isIntersecting?heroP.start():heroP.stop());},{threshold:.05});io.observe($("#top"));})();
 
-/* ================= 起動 ================= */
-$("#heroFlacon").innerHTML=flaconSVG({liquid:"#6E1B2C",acc:"#C6A15C",deep:"#3A0E1A",style:"signature"});
-$("#stageFlacon").innerHTML=flaconSVG({liquid:"#6E1B2C",acc:"#C6A15C",deep:"#3A0E1A",style:"signature"});
+/* ---- 起動 ---- */
 renderStatic();
 runDiagnosisTests();
 </script>
