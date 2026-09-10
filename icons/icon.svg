@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" fill="#EBE4D5"/>
+  <rect x="52" y="52" width="408" height="408" rx="92" fill="#F6F1E6" stroke="#211F19" stroke-width="12"/>
+  <path d="M201 156h110M222 126h68v30h-68zM186 190h140l18 202H168z" fill="none" stroke="#211F19" stroke-width="14" stroke-linejoin="round"/>
+  <path d="M256 228c-34 36-49 59-49 84a49 49 0 0 0 98 0c0-25-15-48-49-84Z" fill="#7E2B2B"/>
+  <path d="M238 313c8 11 20 17 34 17" fill="none" stroke="#EBE4D5" stroke-width="9" stroke-linecap="round"/>
+  <text x="256" y="410" text-anchor="middle" fill="#211F19" font-family="Georgia, serif" font-size="34" letter-spacing="3">FS</text>
+</svg>

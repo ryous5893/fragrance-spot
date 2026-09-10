@@ -1,7 +1,14 @@
+<!doctype html>
+<html lang="ja">
+<head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Fragrance Spot 香り診断</title>
 <meta name="description" content="かわせみ祭 × 高崎モントレー Fragrance Spot 4つの問いで導く あなたのための香りの処方">
+<meta name="theme-color" content="#EBE4D5">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Fragrance Spot">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,400&family=Shippori+Mincho:wght@400;500;600;700&family=Space+Mono:wght@400;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap">
@@ -615,6 +622,8 @@ button,a,.opt,.link{touch-action:manipulation;-webkit-tap-highlight-color:transp
 /* 透かしの四角が出るため撤去 */
 .result .formula::after{display:none}
 </style>
+</head>
+<body>
 
 <!-- ===================== ヘッダー ===================== -->
 <header class="masthead">
@@ -940,4 +949,7 @@ document.addEventListener("keydown",e=>{if(e.key==="Escape"){if(result.classList
 /* ---- 起動 ---- */
 renderStatic();
 runDiagnosisTests();
+
 </script>
+</body>
+</html>

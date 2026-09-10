@@ -16,6 +16,9 @@ def main():
     if not os.path.exists(SRC):
         sys.exit(f"{SRC} が見つかりません")
     s = open(SRC, encoding="utf-8").read()
+    # 単体配布版は外部ファイルを持たないため PWA の参照・登録処理を除く
+    s = re.sub(r"<!-- PWA-ONLY-START -->.*?<!-- PWA-ONLY-END -->\s*", "", s, flags=re.S)
+    s = re.sub(r"/\* PWA-ONLY-START:.*?\*/.*?/\* PWA-ONLY-END \*/\s*", "", s, flags=re.S)
     refs = sorted(set(re.findall(r"assets/w/[A-Za-z0-9._-]+\.webp", s)))
     missing = [r for r in refs if not os.path.exists(r)]
     if missing:

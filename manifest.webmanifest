@@ -1,0 +1,20 @@
+{
+  "id": "./fragrance-spot.html",
+  "name": "Fragrance Spot 香り診断",
+  "short_name": "Fragrance Spot",
+  "description": "4つの問いから あなたに似合う香りを見つける診断",
+  "lang": "ja",
+  "start_url": "./fragrance-spot.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#EBE4D5",
+  "theme_color": "#EBE4D5",
+  "icons": [
+    {
+      "src": "./icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
