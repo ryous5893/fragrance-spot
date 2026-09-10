@@ -32,7 +32,7 @@ python3 -m http.server 8000
 `fragrance-spot.html` は PWA 対応済み。HTTPS で静的ホスティングすると、Safari / Chrome からホーム画面に追加でき、初回アクセス後はオフラインでも利用できる。
 
 - 公開時はリポジトリのルートごとアップロードする（`assets/`、`icons/`、`manifest.webmanifest`、`sw.js` を含める）
-- URL は `https://公開先/fragrance-spot.html` を案内する
+- URL は `https://公開先/` を案内する（`index.html` から診断ページへ遷移する）
 - GitHub Pages などサブディレクトリ配下の公開にも対応するため、パスはすべて相対指定
 - Service Worker の動作には HTTPS（または `localhost`）が必要。`file://` で開いた場合は通常の HTML として動作する
 - サイト更新時は `sw.js` の `CACHE_NAME` を更新する。利用者は次回アクセス時に新しいキャッシュへ切り替わる
